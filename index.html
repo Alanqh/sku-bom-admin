@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GPU 库存 · SKU 构成</title>
+<title>SKU 构成</title>
 <style>
   :root{
     --purple:#6b4cf0;
@@ -84,10 +84,6 @@
   .nav-sub .nav-item.active{background:var(--purple-weak);color:var(--purple);font-weight:600}
   .nav-sub .nav-item.active::before{background:var(--purple)}
   .nav-sub .nav-item.active .ni{color:var(--purple)}
-
-  /* 三级 */
-  .nav-sub2 .nav-item{padding-left:47px;height:30px;font-size:12.5px}
-  .nav-sub2 .nav-item::before{left:33px;width:3px;height:3px}
 
   .tag-new{
     margin-left:auto;flex:none;font-size:10px;line-height:15px;padding:0 5px;border-radius:3px;
@@ -375,17 +371,12 @@
           <span class="label">定价计划</span>
         </div>
 
-        <!-- GPU 库存 + 二级菜单 SKU 构成 -->
-        <div class="nav-item open" data-group="gpuStock">
+        <div class="nav-item" data-nav="GPU 库存">
           <span class="label">GPU 库存</span>
-          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
-
-        <div class="nav-sub nav-sub2" data-sub="gpuStock">
-          <div class="nav-item active" data-nav="SKU 构成">
-            <span class="label">SKU 构成</span>
-            <span class="tag-new">NEW</span>
-          </div>
+        <div class="nav-item active" data-nav="SKU 构成">
+          <span class="label">SKU 构成</span>
+          <span class="tag-new">NEW</span>
         </div>
       </div>
 
