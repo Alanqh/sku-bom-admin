@@ -141,10 +141,6 @@
   .content::-webkit-scrollbar-thumb{background:#dcdfe8;border-radius:4px;border:2px solid var(--bg)}
 
   /* ---------- 页面头 ---------- */
-  .crumb{display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:12px;margin-bottom:10px}
-  .crumb .sep{color:#c8ccd8}
-  .crumb .cur{color:var(--text-2)}
-
   .page-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
   .page-title{font-size:16px;font-weight:650;letter-spacing:.2px;margin:0}
   .page-head .spacer{flex:1}
@@ -164,15 +160,6 @@
   .btn.danger-text:hover{background:var(--danger-weak)}
   .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
   .btn.danger:hover{background:#dc3232;border-color:#dc3232}
-
-  /* ---------- 页签 ---------- */
-  .tabs{display:flex;align-items:center;gap:26px;border-bottom:1px solid var(--line);margin:0 0 14px;padding:0 2px}
-  .tab{
-    position:relative;padding:9px 0 10px;color:var(--text-2);cursor:pointer;font-size:13px;white-space:nowrap;
-    border-bottom:2px solid transparent;margin-bottom:-1px;transition:.14s
-  }
-  .tab:hover{color:var(--purple)}
-  .tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:600}
 
   /* ---------- 筛选 ---------- */
   .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
@@ -209,12 +196,6 @@
   .seg button:last-child{border-right:0}
   .seg button.on{background:var(--purple-weak);color:var(--purple);font-weight:600}
 
-  .selbar{
-    display:none;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--purple-line);
-    background:var(--purple-weak);color:#4b2fd0;font-size:12.5px;font-weight:500
-  }
-  .selbar.show{display:flex}
-
   .table-wrap{overflow-x:auto}
   table{width:100%;border-collapse:separate;border-spacing:0;min-width:940px}
   thead th{
@@ -230,7 +211,6 @@
 
   tbody td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle;color:var(--text)}
   tbody tr:hover td{background:#fafbff}
-  tbody tr.sel td{background:#f5f1ff}
   tbody tr.group-start td{border-top:1px solid var(--line)}
   td.def-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px;background:#fcfcfe}
   td.parent-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px}
@@ -276,8 +256,6 @@
   .pager button.on{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:600}
   .pager button:disabled{opacity:.45;cursor:not-allowed}
   .pager .total{color:var(--text-3);margin-left:8px;font-size:12px}
-
-  .checkbox{width:14px;height:14px;accent-color:var(--purple);cursor:pointer;vertical-align:-2px}
 
   /* ---------- 树形 ---------- */
   .tree{padding:4px 0}
@@ -448,36 +426,13 @@
     </div>
 
     <div class="content">
-      <div class="crumb">
-        <span>商品定价中心</span>
-        <span class="sep">/</span>
-        <span>GPU 库存</span>
-        <span class="sep">/</span>
-        <span class="cur">SKU 构成</span>
-      </div>
-
       <div class="page-head">
         <h1 class="page-title">SKU 构成</h1>
         <div class="spacer"></div>
-        <button class="btn" id="btnImport" title="导入 JSON / CSV">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2.4v7.6m0 0L5.2 7.2M8 10l2.8-2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 11v1.4A1.4 1.4 0 004.2 13.8h7.6a1.4 1.4 0 001.4-1.4V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          导入
-        </button>
-        <button class="btn" id="btnExport" title="导出当前筛选结果为 CSV">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 10V2.4m0 0L5.2 5.2M8 2.4l2.8 2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 11v1.4A1.4 1.4 0 004.2 13.8h7.6a1.4 1.4 0 001.4-1.4V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          导出
-        </button>
         <button class="btn primary" id="btnAdd">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3.2v9.6M3.2 8h9.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
           新增构成
         </button>
-        <input type="file" id="fileInput" accept=".json,.csv,text/csv,application/json" style="display:none" />
-      </div>
-
-      <div class="tabs">
-        <div class="tab active" data-tab="list">构成关系</div>
-        <div class="tab" data-tab="summary">按上级 SKU 汇总</div>
-        <div class="tab" data-tab="log">变更记录</div>
       </div>
 
       <div class="filters">
@@ -535,20 +490,13 @@
           <button class="btn sm ghost" id="btnSeed" title="用初始示例数据覆盖当前数据">恢复示例数据</button>
         </div>
 
-        <div class="selbar" id="selbar">
-          <span id="selCount">已选 0 项</span>
-          <button class="btn sm danger-text" id="btnBatchDel" style="height:24px">批量删除</button>
-          <button class="btn sm ghost" id="btnClearSel" style="height:24px">取消选择</button>
-        </div>
-
         <div id="tableView">
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th style="width:38px"><input type="checkbox" class="checkbox" id="checkAll" /></th>
-                  <th style="width:210px">SKU Definition</th>
-                  <th style="width:260px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
+                  <th style="width:272px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
+                  <th style="width:210px">SKU Definition<span style="font-weight:400;color:#aab0bf">（上级类型）</span></th>
                   <th style="width:225px">下级 SKU</th>
                   <th style="width:110px">作用</th>
                   <th style="width:88px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
@@ -579,7 +527,7 @@
 
       <div class="page-note">
         每一行表示一条构成关系：<b>上级 SKU</b> 由 <b>数量 × 下级 SKU</b> 组成，<b>作用</b> 描述该下级在此组合中承担的算力角色。
-        同一 SKU Definition 下，上级 + 下级 + 作用 需唯一。点击 SKU 名称可快速按该 SKU 筛选。
+        <b>SKU Definition</b> 是上级 SKU 的类型，同一类型下「上级 + 下级 + 作用」需唯一。点击 SKU 名称可快速按该 SKU 筛选。
       </div>
     </div>
   </div>
@@ -595,17 +543,17 @@
       </div>
     </div>
     <div class="modal-body">
-      <div class="form-item full" id="fi-def">
-        <label>SKU Definition <span class="req">*</span></label>
-        <input id="inDef" list="dlDef" placeholder="如 faas-instance-component" autocomplete="off" />
-        <datalist id="dlDef"></datalist>
-        <div class="hint" id="hintDef">构成定义分组名，同一定义下共享一套构成规则</div>
-      </div>
       <div class="form-item full" id="fi-parent">
         <label>上级 SKU <span class="req">*</span></label>
         <input id="inParent" list="dlParent" placeholder="如 nvidia.h200.g8.amd64" autocomplete="off" />
         <datalist id="dlParent"></datalist>
         <div class="hint">被组合出来的商品规格</div>
+      </div>
+      <div class="form-item full" id="fi-def">
+        <label>SKU Definition<span style="color:#8a90a0;font-weight:400">（上级 SKU 的类型）</span> <span class="req">*</span></label>
+        <input id="inDef" list="dlDef" placeholder="如 faas-instance-component" autocomplete="off" />
+        <datalist id="dlDef"></datalist>
+        <div class="hint" id="hintDef">同一类型下共享一套构成规则</div>
       </div>
       <div class="form-item full" id="fi-child">
         <label>下级 SKU <span class="req">*</span></label>
@@ -718,7 +666,6 @@
   /* ================= 状态 ================= */
   var state = {
     rows: [],
-    selected: new Set(),
     page: 1,
     pageSize: 20,
     view: "group",
@@ -850,7 +797,7 @@
     var tb = $("#tbody");
 
     if (!pageRows.length){
-      tb.innerHTML = '<tr><td colspan="7"><div class="empty">' +
+      tb.innerHTML = '<tr><td colspan="6"><div class="empty">' +
         '<svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="26" rx="4" stroke="#ccd1dc" stroke-width="2"/><path d="M8 20h32M18 12v8M30 12v8" stroke="#ccd1dc" stroke-width="2"/></svg>' +
         '<div class="big">没有匹配的构成关系</div>' +
         '<div>调整筛选条件，或点右上角「新增构成」加一条</div></div></td></tr>';
@@ -877,21 +824,21 @@
       pageRows.forEach(function(r, i){
         var dStart = (i === 0) || (pageRows[i - 1].definition !== r.definition);
         var pStart = dStart || (pageRows[i - 1].parentSku !== r.parentSku);
-        var sel = state.selected.has(r.id);
-        html += '<tr class="' + (sel ? "sel" : "") + (dStart ? " group-start" : "") + '" data-id="' + r.id + '">';
-        html += '<td><input type="checkbox" class="checkbox row-check" data-id="' + r.id + '"' + (sel ? " checked" : "") + '></td>';
-        if (dStart){
-          var span = defSpan[r.definition + "#" + i] || 1;
-          html += '<td class="def-cell" rowspan="' + span + '">' +
-            '<div class="def-name">' + esc(r.definition) + '</div>' +
-            '<div class="def-count">' + span + ' 条构成</div></td>';
-        }
+        html += '<tr class="' + (dStart ? "group-start" : "") + '" data-id="' + r.id + '">';
         if (pStart){
           var key = r.definition + "||" + r.parentSku;
           var pspan = parentSpan[key + "#" + i] || 1;
+          var totalOfParent = rows.filter(function(x){ return x.definition === r.definition && x.parentSku === r.parentSku; }).length;
           html += '<td class="parent-cell" rowspan="' + pspan + '">' +
             '<span class="sku-link" data-sku="' + esc(r.parentSku) + '">' + esc(r.parentSku) + '</span>' +
-            (pspan > 1 ? '<div class="sub-count">' + pspan + ' 个下级</div>' : "") + '</td>';
+            (totalOfParent > 1 ? '<div class="sub-count">' + totalOfParent + ' 个下级</div>' : "") + '</td>';
+        }
+        if (dStart){
+          var span = defSpan[r.definition + "#" + i] || 1;
+          var totalOfDef = rows.filter(function(x){ return x.definition === r.definition; }).length;
+          html += '<td class="def-cell" rowspan="' + span + '">' +
+            '<div class="def-name">' + esc(r.definition) + '</div>' +
+            '<div class="def-count">' + totalOfDef + ' 条构成</div></td>';
         }
         html += '<td><span class="sku-plain">' + esc(r.childSku) + '</span></td>';
         html += '<td><span class="role ' + roleClass(r.role) + '">' + esc(r.role) + '</span></td>';
@@ -905,15 +852,7 @@
       tb.innerHTML = html;
     }
 
-    var pageIds = pageRows.map(function(r){ return r.id; });
-    var allChecked = pageIds.length > 0 && pageIds.every(function(id){ return state.selected.has(id); });
-    var someChecked = pageIds.some(function(id){ return state.selected.has(id); });
-    var ca = $("#checkAll");
-    ca.checked = allChecked;
-    ca.indeterminate = !allChecked && someChecked;
-
     renderPager(total, pageCount);
-    renderSelBar();
   }
 
   function renderPager(total, pageCount){
@@ -937,12 +876,6 @@
     parts.push('<button data-page="next"' + (p >= pageCount ? " disabled" : "") + '>&rsaquo;</button>');
     parts.push('<span class="total">共 ' + total + ' 条</span>');
     $("#pager").innerHTML = parts.join("");
-  }
-
-  function renderSelBar(){
-    var n = state.selected.size;
-    $("#selbar").classList.toggle("show", n > 0);
-    $("#selCount").textContent = "已选 " + n + " 项";
   }
 
   /* ================= 树形 ================= */
@@ -1005,7 +938,7 @@
       $("#" + id).classList.remove("error");
     });
     var h = $("#hintDef");
-    h.textContent = "构成定义分组名，同一定义下共享一套构成规则";
+    h.textContent = "同一类型下共享一套构成规则";
     h.style.color = "";
   }
   function setErr(id, hintId, msg){
@@ -1038,7 +971,7 @@
       $("#inQty").value = 1;
     }
     $("#editOverlay").classList.add("show");
-    setTimeout(function(){ $("#inDef").focus(); }, 40);
+    setTimeout(function(){ $("#inParent").focus(); }, 40);
   }
   function closeEdit(){
     $("#editOverlay").classList.remove("show");
@@ -1108,110 +1041,11 @@
   function doDelete(ids){
     var set = new Set(ids);
     state.rows = state.rows.filter(function(r){ return !set.has(r.id); });
-    ids.forEach(function(id){ state.selected.delete(id); });
     save();
     render();
     toast("已删除 " + ids.length + " 条构成", "ok");
   }
 
-  /* ================= 导入导出 ================= */
-  function exportCsv(){
-    var rows = currentRows();
-    if (!rows.length){ toast("没有数据可导出", "err"); return; }
-    var head = ["SKU Definition", "SKU", "下级SKU", "作用", "数量"];
-    var lines = [head.join(",")];
-    rows.forEach(function(r){
-      lines.push([r.definition, r.parentSku, r.childSku, r.role, r.qty].map(function(v){
-        var s = String(v);
-        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-      }).join(","));
-    });
-    var blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "sku-composition-" + new Date().toISOString().slice(0, 10) + ".csv";
-    a.click();
-    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
-    toast("已导出 " + rows.length + " 条", "ok");
-  }
-
-  function parseCsv(text){
-    var lines = text.replace(/\r\n?/g, "\n").split("\n").filter(function(l){ return l.trim() !== ""; });
-    if (!lines.length) return [];
-    var split = function(line){
-      var out = [], cur = "", q = false;
-      for (var i = 0; i < line.length; i++){
-        var ch = line.charAt(i);
-        if (q){
-          if (ch === '"' && line.charAt(i + 1) === '"'){ cur += '"'; i++; }
-          else if (ch === '"'){ q = false; }
-          else cur += ch;
-        } else {
-          if (ch === '"') q = true;
-          else if (ch === "," || ch === "\t"){ out.push(cur); cur = ""; }
-          else cur += ch;
-        }
-      }
-      out.push(cur);
-      return out.map(function(s){ return s.trim(); });
-    };
-    var first = split(lines[0]).join("|").toLowerCase();
-    var hasHead = /definition|sku|作用|数量/.test(first);
-    return lines.slice(hasHead ? 1 : 0).map(split).map(function(cols){
-      return {
-        definition: cols[0] || "",
-        parentSku: cols[1] || "",
-        childSku: cols[2] || "",
-        role: cols[3] || "gpu",
-        qty: Number(cols[4] || 1)
-      };
-    });
-  }
-
-  function handleImport(file){
-    var reader = new FileReader();
-    reader.onload = function(){
-      var text = String(reader.result || "");
-      var incoming = [];
-      try {
-        if (/\.json$/i.test(file.name)){
-          var parsed = JSON.parse(text);
-          var arr = Array.isArray(parsed) ? parsed : (parsed.rows || parsed.data || []);
-          incoming = arr.map(function(r){
-            return {
-              definition: r.definition || r["SKU Definition"] || r.def || "",
-              parentSku: r.parentSku || r.sku || r["SKU"] || r.parent || "",
-              childSku: r.childSku || r.child || r["下级SKU"] || "",
-              role: r.role || r["作用"] || "gpu",
-              qty: Number(r.qty != null ? r.qty : (r["数量"] != null ? r["数量"] : 1))
-            };
-          });
-        } else {
-          incoming = parseCsv(text);
-        }
-      } catch(e){ toast("文件解析失败：" + e.message, "err"); return; }
-
-      incoming = incoming.filter(function(r){ return r.definition && r.parentSku && r.childSku; });
-      if (!incoming.length){ toast("没解析出有效行，检查一下表头顺序", "err"); return; }
-
-      askConfirm("导入数据", "共解析出 " + incoming.length + " 行有效构成，将合并到现有数据（重复项自动跳过）。", "", function(){
-        var added = 0, skipped = 0;
-        incoming.forEach(function(r){
-          var qty = Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1;
-          var role = String(r.role || "gpu").trim() || "gpu";
-          var dup = state.rows.filter(function(x){
-            return x.definition === r.definition && x.parentSku === r.parentSku && x.childSku === r.childSku && x.role === role;
-          })[0];
-          if (dup){ skipped++; return; }
-          state.rows.push({ id: uid(), definition: r.definition, parentSku: r.parentSku, childSku: r.childSku, role: role, qty: qty });
-          added++;
-        });
-        save(); render();
-        toast("导入完成：新增 " + added + " 条，跳过重复 " + skipped + " 条", "ok");
-      }, "确认导入");
-    };
-    reader.readAsText(file, "utf-8");
-  }
 
   /* ================= 侧边栏 ================= */
   function bindNav(){
@@ -1236,15 +1070,6 @@
     });
 
     $("#themeSwitch").addEventListener("click", function(){ this.classList.toggle("on"); });
-
-    $$(".tabs .tab").forEach(function(t){
-      t.addEventListener("click", function(){
-        if (t.classList.contains("active")) return;
-        $$(".tabs .tab").forEach(function(x){ x.classList.remove("active"); });
-        t.classList.add("active");
-        toast("「" + t.textContent.trim() + "」为占位页签，本次只交付「构成关系」", "err");
-      });
-    });
   }
 
   /* ================= 事件 ================= */
@@ -1253,24 +1078,24 @@
     $("#fName").addEventListener("input", function(e){
       clearTimeout(t1);
       var v = e.target.value;
-      t1 = setTimeout(function(){ filters.name = v; state.page = 1; state.selected.clear(); render(); }, 160);
+      t1 = setTimeout(function(){ filters.name = v; state.page = 1; render(); }, 160);
     });
     var t2;
     $("#fSell").addEventListener("input", function(e){
       clearTimeout(t2);
       var v = e.target.value;
-      t2 = setTimeout(function(){ filters.sell = v; state.page = 1; state.selected.clear(); render(); }, 160);
+      t2 = setTimeout(function(){ filters.sell = v; state.page = 1; render(); }, 160);
     });
     $("#fDef").addEventListener("change", function(e){
-      filters.def = e.target.value; state.page = 1; state.selected.clear(); render();
+      filters.def = e.target.value; state.page = 1; render();
     });
     $("#fSku").addEventListener("change", function(e){
-      filters.sku = e.target.value; state.page = 1; state.selected.clear(); render();
+      filters.sku = e.target.value; state.page = 1; render();
     });
     $("#resetFilters").addEventListener("click", function(){
       filters.name = filters.sell = filters.def = filters.sku = "";
       $("#fName").value = ""; $("#fSell").value = ""; $("#fDef").value = ""; $("#fSku").value = "";
-      state.page = 1; state.selected.clear(); render();
+      state.page = 1; render();
       toast("筛选已重置", "ok");
     });
 
@@ -1287,14 +1112,6 @@
       state.sortQty = state.sortQty === 0 ? 1 : (state.sortQty === 1 ? -1 : 0);
       this.classList.toggle("sorted", state.sortQty !== 0);
       this.querySelector(".caret").textContent = state.sortQty === 0 ? "↕" : (state.sortQty === 1 ? "↑" : "↓");
-      render();
-    });
-
-    $("#checkAll").addEventListener("change", function(e){
-      var rows = currentRows().slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
-      rows.forEach(function(r){
-        if (e.target.checked) state.selected.add(r.id); else state.selected.delete(r.id);
-      });
       render();
     });
 
@@ -1326,25 +1143,10 @@
         filters.name = "";
         $("#fName").value = "";
         state.page = 1;
-        state.selected.clear();
+       
         render();
         toast("已按 SKU 筛选：" + v, "ok");
         return;
-      }
-
-      var cb = e.target.closest(".row-check");
-      if (cb){
-        if (cb.checked) state.selected.add(cb.getAttribute("data-id"));
-        else state.selected.delete(cb.getAttribute("data-id"));
-        renderSelBar();
-        var tr = cb.closest("tr");
-        if (tr) tr.classList.toggle("sel", cb.checked);
-        var pageIds = currentRows().slice((state.page - 1) * state.pageSize, state.page * state.pageSize).map(function(r){ return r.id; });
-        var all = pageIds.every(function(id){ return state.selected.has(id); });
-        var some = pageIds.some(function(id){ return state.selected.has(id); });
-        var ca = $("#checkAll");
-        ca.checked = all;
-        ca.indeterminate = !all && some;
       }
     });
 
@@ -1364,14 +1166,6 @@
       state.page = 1;
       render();
     });
-
-    $("#btnBatchDel").addEventListener("click", function(){
-      var ids = Array.from(state.selected);
-      if (!ids.length) return;
-      askConfirm("批量删除 " + ids.length + " 条构成", "删除后不可撤销（本地演示数据）。", "",
-        function(){ doDelete(ids); }, "删除 " + ids.length + " 条");
-    });
-    $("#btnClearSel").addEventListener("click", function(){ state.selected.clear(); render(); });
 
     $("#btnAdd").addEventListener("click", function(){ openEdit(null); });
     $("#btnCancelEdit").addEventListener("click", closeEdit);
@@ -1395,18 +1189,9 @@
       if (cb) cb();
     });
 
-    $("#btnExport").addEventListener("click", exportCsv);
-    $("#btnImport").addEventListener("click", function(){ $("#fileInput").click(); });
-    $("#fileInput").addEventListener("change", function(e){
-      var f = e.target.files && e.target.files[0];
-      if (f) handleImport(f);
-      e.target.value = "";
-    });
-
     $("#btnSeed").addEventListener("click", function(){
       askConfirm("恢复示例数据", "当前所有构成关系会被替换为初始示例数据。", "", function(){
         state.rows = seedData();
-        state.selected.clear();
         state.page = 1;
         save();
         render();
