@@ -136,10 +136,16 @@
   .content::-webkit-scrollbar{width:8px}
   .content::-webkit-scrollbar-thumb{background:#dcdfe8;border-radius:4px;border:2px solid var(--bg)}
 
-  /* ---------- 页面头 ---------- */
-  .page-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  /* ---------- 1. 标题行 ---------- */
+  .page-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
   .page-title{font-size:16px;font-weight:650;letter-spacing:.2px;margin:0}
   .page-head .spacer{flex:1}
+  .page-head .summary{
+    color:var(--text-3);font-size:12px;display:flex;align-items:center;gap:7px;
+    flex-wrap:wrap;margin-left:2px
+  }
+  .page-head .summary b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+  .page-head .summary .dot{color:#d3d7e0}
 
   .btn{
     height:32px;padding:0 13px;border-radius:6px;border:1px solid #dcdfe8;background:#fff;color:var(--text);
@@ -157,8 +163,9 @@
   .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
   .btn.danger:hover{background:#dc3232;border-color:#dc3232}
 
-  /* ---------- 筛选 ---------- */
-  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  /* ---------- 2. 新增构成 + 筛选器（同一行） ---------- */
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
   .fchip{
     display:flex;align-items:center;height:34px;border:1px solid #dcdfe8;border-radius:6px;background:#fff;transition:.14s;min-width:0
   }
@@ -166,23 +173,16 @@
   .fchip:focus-within{border-color:var(--purple);box-shadow:0 0 0 3px rgba(107,76,240,.1)}
   .fchip .fi{padding:0 7px 0 10px;color:#8a90a0;display:flex;align-items:center;flex:none}
   .fchip .fl{color:var(--text-2);white-space:nowrap;flex:none;font-size:12.5px}
-  .fchip input{border:0;outline:0;background:transparent;height:100%;padding:0 8px;width:132px;color:var(--text);font-size:12.5px}
+  .fchip input{border:0;outline:0;background:transparent;height:100%;padding:0 8px;width:196px;color:var(--text);font-size:12.5px}
   .fchip input::placeholder{color:#b6bac6}
   .fchip select{
-    border:0;outline:0;background:transparent;height:100%;padding:0 4px 0 8px;min-width:120px;max-width:170px;
+    border:0;outline:0;background:transparent;height:100%;padding:0 4px 0 8px;min-width:96px;max-width:160px;
     color:var(--text);font-size:12.5px;cursor:pointer;appearance:none;text-overflow:ellipsis
   }
   .fchip .chev{padding:0 9px 0 2px;color:#8a90a0;display:flex;flex:none}
-  .filters .spacer{flex:1}
 
-  /* ---------- 卡片 / 表格 ---------- */
+  /* ---------- 3. 表格 ---------- */
   .card{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.03)}
-  .card-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
-  .card-title{font-size:13.5px;font-weight:650}
-  .summary{color:var(--text-3);font-size:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .summary b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
-  .summary .dot{color:#d3d7e0}
-  .card-head .spacer{flex:1}
 
   .seg{display:inline-flex;border:1px solid #dcdfe8;border-radius:6px;overflow:hidden;background:#fff}
   .seg button{
@@ -193,7 +193,7 @@
   .seg button.on{background:var(--purple-weak);color:var(--purple);font-weight:600}
 
   .table-wrap{overflow-x:auto}
-  table{width:100%;border-collapse:separate;border-spacing:0;min-width:940px}
+  table{width:100%;border-collapse:separate;border-spacing:0;min-width:1080px}
   thead th{
     background:#fafbfc;color:#6b7280;font-weight:600;text-align:left;font-size:12px;
     padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap
@@ -209,26 +209,19 @@
   tbody tr:hover td{background:#fafbff}
   tbody tr.group-start td{border-top:1px solid var(--line)}
 
-  .sku-link{
-    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--link);
-    cursor:pointer;word-break:break-all
-  }
-  .sku-link:hover{text-decoration:underline}
-  .sku-plain{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--text-2)}
-  .sku-id{
+  /* SKU ID / Name 展示 */
+  .sk-id{
     display:inline-block;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;
     color:#5b6070;background:#f4f5f9;border:1px solid #eceef4;border-radius:4px;
     padding:1px 6px;line-height:17px;word-break:break-all
   }
+  .sk-name{
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--text-2);
+    word-break:break-all
+  }
+  .sk-name.link{color:var(--link);cursor:pointer}
+  .sk-name.link:hover{text-decoration:underline}
   .na{color:#c4c9d6}
-  .ts{
-    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#5b6070;
-    white-space:nowrap;font-variant-numeric:tabular-nums
-  }
-  .ts .edited{
-    margin-left:5px;font-family:inherit;font-size:10px;line-height:15px;padding:0 4px;border-radius:3px;
-    background:#fff3e6;color:#c2761a;font-weight:600;vertical-align:1px
-  }
 
   .role{
     display:inline-flex;align-items:center;gap:5px;border-radius:4px;padding:1px 7px;font-size:12px;
@@ -240,9 +233,19 @@
   .role.memory{background:#e9f9ef;color:#0f9d58}
   .role.disk{background:#fff4e6;color:#c2761a}
   .role.network{background:#e7f8fa;color:#0d8fa8}
+  .role.accelerator{background:#fdeef6;color:#c2255c}
 
   .qty{font-variant-numeric:tabular-nums;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:600;color:var(--text)}
   .qty em{font-style:normal;font-size:11px;color:var(--text-3);font-weight:400;margin-left:2px}
+
+  .ts{
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#5b6070;
+    white-space:nowrap;font-variant-numeric:tabular-nums
+  }
+  .ts .edited{
+    margin-left:5px;font-family:inherit;font-size:10px;line-height:15px;padding:0 4px;border-radius:3px;
+    background:#fff3e6;color:#c2761a;font-weight:600;vertical-align:1px
+  }
 
   .ops{display:flex;gap:12px;justify-content:flex-end;font-size:12.5px}
   .op-link{border:0;background:transparent;padding:0;cursor:pointer;color:var(--link);font-size:12.5px}
@@ -280,7 +283,7 @@
     z-index:80;padding:64px 16px 24px;overflow-y:auto
   }
   .overlay.show{display:flex}
-  .modal{background:#fff;border-radius:10px;width:520px;max-width:100%;box-shadow:0 16px 48px rgba(16,24,40,.2);animation:pop .15s ease-out}
+  .modal{background:#fff;border-radius:10px;width:560px;max-width:100%;box-shadow:0 16px 48px rgba(16,24,40,.2);animation:pop .15s ease-out}
   @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
   .modal-head{padding:16px 18px 0;display:flex;align-items:flex-start;gap:10px}
   .modal-head h3{margin:0;font-size:15px;font-weight:650}
@@ -293,13 +296,58 @@
   .form-item input,.form-item select{
     height:33px;border:1px solid #dcdfe8;border-radius:6px;padding:0 10px;outline:0;background:#fff;color:var(--text);width:100%;font-size:12.5px
   }
+  .form-item select{cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6.2L8 10.2 12 6.2' stroke='%238a90a0' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 10px center;padding-right:26px}
   .form-item input:focus,.form-item select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(107,76,240,.1)}
   .form-item .hint{font-size:11.5px;color:var(--text-3)}
-  .form-item.error input,.form-item.error select{border-color:var(--danger);box-shadow:0 0 0 3px rgba(245,63,63,.08)}
+  .form-item.error input,.form-item.error select,.form-item.error .sk-picker{border-color:var(--danger);box-shadow:0 0 0 3px rgba(245,63,63,.08)}
   .form-item.error .hint{color:var(--danger)}
   .modal-foot{padding:12px 18px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line-2);margin-top:14px}
   .modal.confirm{width:430px}
   .modal.confirm .modal-body{display:block;color:var(--text-2);line-height:1.65;font-size:12.5px}
+
+  /* ---------- SKU 选择器：ID 与 Name 必须成对 ---------- */
+  .sk-picker{position:relative}
+  .sk-picker [hidden]{display:none!important}
+  .sk-selected{
+    display:flex;align-items:center;gap:8px;min-height:33px;border:1px solid #dcdfe8;border-radius:6px;
+    padding:4px 8px 4px 9px;background:#fafbfc
+  }
+  .sk-selected .sk-name{
+    flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)
+  }
+  .sk-change{
+    border:0;background:transparent;color:var(--link);cursor:pointer;font-size:12px;padding:0;flex:none
+  }
+  .sk-change:hover{text-decoration:underline}
+  .sk-search input{
+    height:33px;width:100%;border:1px solid #dcdfe8;border-radius:6px;padding:0 10px;outline:0;background:#fff
+  }
+  .sk-search input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(107,76,240,.1)}
+  .sk-pop{
+    position:absolute;left:0;right:0;top:calc(100% + 4px);background:#fff;border:1px solid #e2e5ee;
+    border-radius:8px;box-shadow:0 12px 30px rgba(16,24,40,.16);z-index:30;max-height:252px;overflow-y:auto
+  }
+  .sk-pop[hidden]{display:none}
+  .sk-opt{display:flex;align-items:center;gap:9px;padding:7px 10px;cursor:pointer;border-bottom:1px solid #f5f6fa}
+  .sk-opt:last-of-type{border-bottom:0}
+  .sk-opt:hover,.sk-opt.on{background:#f7f5ff}
+  .sk-opt .sk-id{flex:none}
+  .sk-opt .sk-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sk-none{padding:11px 10px;color:#8a90a0;font-size:12px}
+  .sk-new{padding:9px 10px;border-top:1px solid #eceef4;background:#fafbfc;position:sticky;bottom:0}
+  .sk-new .t{font-size:11.5px;color:#8a90a0;margin-bottom:6px}
+  .sk-new .r1{display:flex;gap:6px;align-items:center}
+  .sk-new input{height:29px;border:1px solid #dcdfe8;border-radius:5px;padding:0 7px;font-size:12px;width:100%;min-width:0;background:#fff}
+  .sk-new input:focus{outline:0;border-color:var(--purple)}
+  .sk-new button{
+    height:29px;padding:0 11px;border-radius:5px;border:1px solid var(--purple);background:var(--purple);
+    color:#fff;cursor:pointer;font-size:12px;flex:none;font-weight:500
+  }
+  .sk-new button:hover{background:var(--purple-dark)}
+  .sk-picker.readonly .sk-change,.sk-picker.readonly .sk-search{display:none!important}
+  .sk-picker.readonly .sk-selected{background:#f7f8fa;border-color:#e9eaf0}
 
   /* ---------- toast ---------- */
   .toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:95;display:flex;flex-direction:column;gap:8px;align-items:center}
@@ -423,77 +471,76 @@
     </div>
 
     <div class="content">
+
+      <!-- ========== 1. 标题 ========== -->
       <div class="page-head">
         <h1 class="page-title">SKU 构成</h1>
+        <div class="summary">
+          <span>共 <b id="sumRows">0</b> 条</span>
+          <span class="dot">·</span>
+          <span><b id="sumParents">0</b> 个上级 SKU</span>
+          <span class="dot">·</span>
+          <span><b id="sumChildren">0</b> 个下级 SKU</span>
+          <span class="dot">·</span>
+          <span><b id="sumRoles">0</b> 种作用</span>
+        </div>
         <div class="spacer"></div>
+        <div class="seg" id="viewSeg">
+          <button class="on" data-view="group">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2.4 3.6h11.2M2.4 8h11.2M2.4 12.4h11.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            明细
+          </button>
+          <button data-view="tree">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 3.2v9.4h4.4M4 7h4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="9.2" y="2" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/><rect x="9.2" y="9.6" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/></svg>
+            树形
+          </button>
+        </div>
+        <button class="btn sm ghost" id="btnSeed" title="用初始示例数据覆盖当前数据">恢复示例数据</button>
+      </div>
+
+      <!-- ========== 2. 新增构成 + 筛选器 ========== -->
+      <div class="toolbar">
         <button class="btn primary" id="btnAdd">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3.2v9.6M3.2 8h9.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
           新增构成
         </button>
+
+        <div class="filters">
+          <div class="fchip">
+            <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.2" stroke="currentColor" stroke-width="1.3"/><path d="M10.2 10.2L13.6 13.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <span class="fl">SKU</span>
+            <input id="fSku" placeholder="搜索 SKU ID 或名称" />
+          </div>
+
+          <div class="fchip">
+            <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 4.6h10M3 8h10M3 11.4h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+            <span class="fl">作用</span>
+            <select id="fRole"><option value="">全部</option></select>
+            <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+
+          <button class="btn ghost sm" id="resetFilters">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 11-1.6-3.7M13 2.6v2.8h-2.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            重置
+          </button>
+        </div>
       </div>
 
-      <div class="filters">
-        <div class="fchip">
-          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2.2" y="2.6" width="11.6" height="10.8" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.6 6h6.8M4.6 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
-          <span class="fl">SKU 名称包含</span>
-          <input id="fName" placeholder="如 nvidia.h200" />
-        </div>
-        <div class="fchip">
-          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.6 3.6h10.8l-4.1 4.9v3.9l-2.6-1.2V8.5L2.6 3.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
-          <span class="fl">SKU ID 包含</span>
-          <input id="fId" placeholder="如 15380" />
-        </div>
-        <div class="fchip">
-          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.4 7.4V3.8a1.4 1.4 0 011.4-1.4h3.4l6 6-4.8 4.8-6-6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.4" cy="5.4" r=".8" fill="currentColor"/></svg></span>
-          <span class="fl">SKU 是</span>
-          <select id="fSku"><option value="">全部</option></select>
-          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        </div>
-        <button class="btn ghost sm" id="resetFilters">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 11-1.6-3.7M13 2.6v2.8h-2.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          重置
-        </button>
-      </div>
-
+      <!-- ========== 3 + 4. 列名行 + 数据行 ========== -->
       <div class="card">
-        <div class="card-head">
-          <div class="card-title" id="defTitle">SKU 构成明细</div>
-          <div class="summary">
-            <span>共 <b id="sumRows">0</b> 条构成</span>
-            <span class="dot">·</span>
-            <span><b id="sumParents">0</b> 个上级</span>
-            <span class="dot">·</span>
-            <span><b id="sumChildren">0</b> 个下级</span>
-            <span class="dot">·</span>
-            <span><b id="sumRoles">0</b> 种作用</span>
-          </div>
-          <div class="spacer"></div>
-          <div class="seg" id="viewSeg">
-            <button class="on" data-view="group">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2.4 3.6h11.2M2.4 8h11.2M2.4 12.4h11.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-              明细
-            </button>
-            <button data-view="tree">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 3.2v9.4h4.4M4 7h4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="9.2" y="2" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/><rect x="9.2" y="9.6" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/></svg>
-              树形
-            </button>
-          </div>
-          <button class="btn sm ghost" id="btnSeed" title="用初始示例数据覆盖当前数据">恢复示例数据</button>
-        </div>
-
         <div id="tableView">
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th style="width:230px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
-                  <th style="width:110px">SKU ID</th>
-                  <th style="width:200px">下级 SKU</th>
-                  <th style="width:110px">SKU ID</th>
-                  <th style="width:100px">作用</th>
-                  <th style="width:80px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
-                  <th style="width:138px" class="sortable" id="thCreated"><span class="th-in">创建时间 <span class="caret">↕</span></span></th>
-                  <th style="width:138px" class="sortable" id="thUpdated"><span class="th-in">更新时间 <span class="caret">↕</span></span></th>
+                  <th style="width:104px">上级 SKU ID</th>
+                  <th style="width:216px">上级 SKU Name</th>
+                  <th style="width:104px">下级 SKU ID</th>
+                  <th style="width:200px">下级 SKU Name</th>
+                  <th style="width:104px">作用</th>
+                  <th style="width:78px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
+                  <th style="width:134px" class="sortable" id="thCreated"><span class="th-in">创建时间 <span class="caret">↕</span></span></th>
+                  <th style="width:134px" class="sortable" id="thUpdated"><span class="th-in">更新时间 <span class="caret">↕</span></span></th>
                   <th style="width:84px;text-align:right">操作</th>
                 </tr>
               </thead>
@@ -521,7 +568,7 @@
 
       <div class="page-note">
         每一行表示一条构成关系：<b>上级 SKU</b> 由 <b>数量 × 下级 SKU</b> 组成，<b>作用</b> 描述该下级在此组合中承担的算力角色。
-        每条关系的上下级 SKU 各自带有独立的 <b>SKU ID</b>；<b>创建时间</b> 与 <b>更新时间</b> 记录这条关系的变动轨迹。点击 SKU 名称可快速按该 SKU 筛选。
+        <b>SKU ID</b> 与 <b>SKU Name</b> 是同一个 SKU 的两种属性，始终成对出现、不可分别修改。
       </div>
     </div>
   </div>
@@ -533,50 +580,55 @@
     <div class="modal-head">
       <div>
         <h3 id="editTitle">新增 SKU 构成</h3>
-        <p id="editSub">描述「下级 SKU 以何种作用、多少个，挂在上级 SKU 之下」。</p>
+        <p id="editSub">选择上级与下级 SKU，并指定该下级的作用与数量。</p>
       </div>
     </div>
     <div class="modal-body">
-      <div class="form-item full" id="fi-parent">
+
+      <div class="form-item full" id="fi-parentSku">
         <label>上级 SKU <span class="req">*</span></label>
-        <input id="inParent" list="dlParent" placeholder="如 nvidia.h200.g8.amd64" autocomplete="off" />
-        <datalist id="dlParent"></datalist>
-        <div class="hint">被组合出来的商品规格</div>
+        <div class="sk-picker" id="pickParent">
+          <div class="sk-selected" id="selParent" hidden>
+            <span class="sk-id" id="selParentId"></span>
+            <span class="sk-name" id="selParentName"></span>
+            <button type="button" class="sk-change" id="chgParent">更换</button>
+          </div>
+          <div class="sk-search" id="searchParent">
+            <input id="inParentSearch" placeholder="搜索 SKU ID 或名称，如 15380 / nvidia.h200" autocomplete="off" />
+            <div class="sk-pop" id="popParent" hidden></div>
+          </div>
+        </div>
+        <div class="hint">ID 与名称是同一个 SKU 的两种属性，选中即同时确定</div>
       </div>
-      <div class="form-item full" id="fi-parentId">
-        <label>上级 SKU ID <span class="req">*</span></label>
-        <input id="inParentId" placeholder="如 15380" autocomplete="off" />
-        <div class="hint">上级 SKU 的唯一标识</div>
-      </div>
-      <div class="form-item full" id="fi-child">
+
+      <div class="form-item full" id="fi-childSku">
         <label>下级 SKU <span class="req">*</span></label>
-        <input id="inChild" list="dlChild" placeholder="如 nvidia.h200.amd64" autocomplete="off" />
-        <datalist id="dlChild"></datalist>
-        <div class="hint">被计入组合的原子规格</div>
+        <div class="sk-picker" id="pickChild">
+          <div class="sk-selected" id="selChild" hidden>
+            <span class="sk-id" id="selChildId"></span>
+            <span class="sk-name" id="selChildName"></span>
+            <button type="button" class="sk-change" id="chgChild">更换</button>
+          </div>
+          <div class="sk-search" id="searchChild">
+            <input id="inChildSearch" placeholder="搜索 SKU ID 或名称，如 15381 / nvidia.h200" autocomplete="off" />
+            <div class="sk-pop" id="popChild" hidden></div>
+          </div>
+        </div>
+        <div class="hint">ID 与名称是同一个 SKU 的两种属性，选中即同时确定</div>
       </div>
-      <div class="form-item full" id="fi-childId">
-        <label>下级 SKU ID <span class="req">*</span></label>
-        <input id="inChildId" placeholder="如 15381" autocomplete="off" />
-        <div class="hint">下级 SKU 的唯一标识</div>
-      </div>
+
       <div class="form-item" id="fi-role">
         <label>作用 <span class="req">*</span></label>
-        <input id="inRole" list="dlRole" placeholder="gpu" autocomplete="off" />
-        <datalist id="dlRole">
-          <option value="gpu"></option>
-          <option value="cpu"></option>
-          <option value="memory"></option>
-          <option value="disk"></option>
-          <option value="network"></option>
-          <option value="accelerator"></option>
-        </datalist>
-        <div class="hint">可选用预置项或自定义</div>
+        <select id="inRole"></select>
+        <div class="hint">从预置作用中选择</div>
       </div>
+
       <div class="form-item" id="fi-qty">
         <label>数量 <span class="req">*</span></label>
         <input id="inQty" type="number" min="1" step="1" value="1" />
         <div class="hint">正整数</div>
       </div>
+
     </div>
     <div class="modal-foot">
       <button class="btn" id="btnCancelEdit">取消</button>
@@ -608,7 +660,10 @@
 (function(){
   "use strict";
 
-  var KEY = "sku_bom_admin_v2";
+  var KEY = "sku_bom_admin_v3";
+  var LEGACY_KEYS = ["sku_bom_admin_v2", "sku_bom_admin_v1"];
+  var ROLES = ["gpu", "cpu", "memory", "disk", "network", "accelerator"];
+
   var $ = function(s, r){ return (r || document).querySelector(s); };
   var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var uid = function(){ return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); };
@@ -654,31 +709,31 @@
       ["faas.pod.large.amd64", "faas.nic.10g", "network", 1]
     ];
 
-    // SKU ID 归属于 SKU 本身：同一 SKU 无论作上级还是下级，ID 一致
+    // SKU ID 与 SKU Name 是同一个对象的两种属性：同一 Name 永远同一个 ID
     var idMap = {};
-    var seq = 380;
-    function skuIdOf(sku){
-      if (!idMap[sku]) idMap[sku] = String(15000 + (seq++));
-      return idMap[sku];
+    var seq = 15380;
+    function idOf(name){
+      if (!idMap[name]) idMap[name] = String(seq++);
+      return idMap[name];
     }
 
     var rows = g.map(function(a){
       return {
         id: uid(),
-        parentSku: a[0], parentSkuId: skuIdOf(a[0]),
-        childSku: a[1], childSkuId: skuIdOf(a[1]),
+        parentSkuId: idOf(a[0]), parentSkuName: a[0],
+        childSkuId: idOf(a[1]), childSkuName: a[1],
         role: "gpu", qty: a[2]
       };
     }).concat(extra.map(function(a){
       return {
         id: uid(),
-        parentSku: a[0], parentSkuId: skuIdOf(a[0]),
-        childSku: a[1], childSkuId: skuIdOf(a[1]),
+        parentSkuId: idOf(a[0]), parentSkuName: a[0],
+        childSkuId: idOf(a[1]), childSkuName: a[1],
         role: a[2], qty: a[3]
       };
     }));
 
-    // 造一批看起来合理的时间戳：创建时间往前铺开，部分记录后续被编辑过
+    // 造一批合理的时间戳：创建时间往前铺开，部分记录后续被编辑过
     var now = Date.now();
     var HOUR = 3600 * 1000;
     rows.forEach(function(r, i){
@@ -705,53 +760,63 @@
     editingId: null
   };
 
+  var filters = { sku: "", role: "" };
+
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(state.rows)); } catch(e){}
   }
+
+  function normalizeId(v){
+    var s = String(v == null ? "" : v).trim();
+    return s.replace(/^(\d+)\.(\d+)$/, "$1$2");
+  }
+
   function load(){
     try {
       var raw = localStorage.getItem(KEY);
+      if (!raw){
+        for (var i = 0; i < LEGACY_KEYS.length; i++){
+          raw = localStorage.getItem(LEGACY_KEYS[i]);
+          if (raw) break;
+        }
+      }
       if (!raw) return null;
       var arr = JSON.parse(raw);
       if (!Array.isArray(arr)) return null;
-      var rows = arr.filter(function(r){ return r && r.parentSku && r.childSku; }).map(function(r){
-        var created = Number(r.createdAt) > 0 ? Number(r.createdAt) : (Number(r.updatedAt) > 0 ? Number(r.updatedAt) : Date.now());
+
+      var rows = arr.filter(function(r){
+        return r && (r.parentSkuName || r.parentSku) && (r.childSkuName || r.childSku);
+      }).map(function(r){
+        var created = Number(r.createdAt) > 0 ? Number(r.createdAt)
+                    : (Number(r.updatedAt) > 0 ? Number(r.updatedAt) : Date.now());
         var updated = Number(r.updatedAt) > 0 ? Number(r.updatedAt) : created;
         return {
           id: r.id || uid(),
-          parentSku: String(r.parentSku),
-          parentSkuId: r.parentSkuId ? String(r.parentSkuId) : "",
-          childSku: String(r.childSku),
-          childSkuId: r.childSkuId ? String(r.childSkuId) : "",
+          parentSkuId: normalizeId(r.parentSkuId),
+          parentSkuName: String(r.parentSkuName || r.parentSku || ""),
+          childSkuId: normalizeId(r.childSkuId),
+          childSkuName: String(r.childSkuName || r.childSku || ""),
           role: String(r.role || "gpu"),
           qty: Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1,
           createdAt: created,
           updatedAt: updated
         };
       });
-      // 旧版本的 SKU ID 形如 "15.385"，现统一为纯数字 "15385"
-      var normId = function(v){
-        var s = String(v == null ? "" : v).trim();
-        return s.replace(/^(\d+)\.(\d+)$/, "$1$2");
-      };
-      rows.forEach(function(r){
-        r.parentSkuId = normId(r.parentSkuId);
-        r.childSkuId = normId(r.childSkuId);
-      });
-      // SKU ID 归属于 SKU 本身：同一 SKU 在所有行里必须同一个 ID
-      var idMap = {};
-      var seq = 380;
+
+      // 同一 SKU（同名）必须同一个 ID：以先出现的非空 ID 为准补齐
+      var byName = {};
+      var seq = 15380;
       function nextId(){
-        var candidate;
-        var used = Object.keys(idMap).map(function(k){ return idMap[k]; });
-        do { candidate = String(15000 + (seq++)); } while (used.indexOf(candidate) >= 0);
-        return candidate;
+        var used = Object.keys(byName).map(function(k){ return byName[k]; });
+        var cand;
+        do { cand = String(seq++); } while (used.indexOf(cand) >= 0);
+        return cand;
       }
       rows.forEach(function(r){
-        if (!idMap[r.parentSku]) idMap[r.parentSku] = r.parentSkuId || nextId();
-        if (!idMap[r.childSku]) idMap[r.childSku] = r.childSkuId || nextId();
-        r.parentSkuId = idMap[r.parentSku];
-        r.childSkuId = idMap[r.childSku];
+        if (!byName[r.parentSkuName]) byName[r.parentSkuName] = r.parentSkuId || nextId();
+        if (!byName[r.childSkuName]) byName[r.childSkuName] = r.childSkuId || nextId();
+        r.parentSkuId = byName[r.parentSkuName];
+        r.childSkuId = byName[r.childSkuName];
       });
       return rows;
     } catch(e){ return null; }
@@ -771,10 +836,9 @@
   }
   function roleClass(role){
     var r = String(role || "").toLowerCase();
-    return ["gpu", "cpu", "memory", "disk", "network"].indexOf(r) >= 0 ? r : "";
+    return ROLES.indexOf(r) >= 0 ? r : "";
   }
   function uniq(a){ return Array.from(new Set(a)); }
-  function cmp(a, b){ return String(a).localeCompare(String(b), "en"); }
 
   function pad2(n){ return n < 10 ? "0" + n : String(n); }
   function fmtTime(ts){
@@ -783,76 +847,93 @@
     return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) +
       " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
   }
-  function relTime(ts){
-    var n = Number(ts);
-    if (!n) return "";
-    var diff = Date.now() - n;
-    if (diff < 60 * 1000) return "刚刚";
-    if (diff < 3600 * 1000) return Math.floor(diff / 60000) + " 分钟前";
-    if (diff < 86400 * 1000) return Math.floor(diff / 3600000) + " 小时前";
-    if (diff < 30 * 86400 * 1000) return Math.floor(diff / 86400000) + " 天前";
-    return "";
+
+  /* ================= SKU 目录：ID 与 Name 配对 ================= */
+  function skuCatalog(){
+    var map = {};
+    state.rows.forEach(function(r){
+      if (!map[r.parentSkuId]) map[r.parentSkuId] = r.parentSkuName;
+      if (!map[r.childSkuId]) map[r.childSkuId] = r.childSkuName;
+    });
+    return Object.keys(map).map(function(id){
+      return { id: id, name: map[id] };
+    }).sort(function(a, b){
+      return String(a.name).localeCompare(String(b.name), "en");
+    });
+  }
+  function findSkuByName(name){
+    var n = String(name || "");
+    var hit = skuCatalog().filter(function(o){ return o.name === n; })[0];
+    return hit || null;
+  }
+  function nextFreeSkuId(){
+    var used = skuCatalog().map(function(o){ return Number(o.id); }).filter(function(n){ return isFinite(n); });
+    var max = used.length ? Math.max.apply(null, used) : 15379;
+    return String(max + 1);
   }
 
   /* ================= 筛选 ================= */
-  var filters = { name: "", id: "", sku: "" };
-
   function currentRows(){
-    var n = filters.name.trim().toLowerCase();
-    var idq = filters.id.trim().toLowerCase();
+    var q = filters.sku.trim().toLowerCase();
     var rows = state.rows.filter(function(r){
-      if (n && !(r.parentSku.toLowerCase().indexOf(n) >= 0 || r.childSku.toLowerCase().indexOf(n) >= 0)) return false;
-      if (idq && !((r.parentSkuId || "").toLowerCase().indexOf(idq) >= 0 || (r.childSkuId || "").toLowerCase().indexOf(idq) >= 0)) return false;
-      if (filters.sku && r.parentSku !== filters.sku && r.childSku !== filters.sku) return false;
+      if (q){
+        var hay = (r.parentSkuId + " " + r.parentSkuName + " " + r.childSkuId + " " + r.childSkuName).toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      if (filters.role && r.role !== filters.role) return false;
       return true;
     });
     rows.sort(function(a, b){
-      // 时间排序激活时，时间为主键（不再按上级 SKU 归组）
       if (state.sortCreated || state.sortUpdated){
         var dir = state.sortCreated || state.sortUpdated;
         var ka = state.sortCreated ? (a.createdAt || 0) : (a.updatedAt || 0);
         var kb = state.sortCreated ? (b.createdAt || 0) : (b.updatedAt || 0);
         var t = (ka - kb) * dir;
         if (t) return t;
-        return cmp(a.parentSku, b.parentSku) || cmp(a.childSku, b.childSku);
+        return (Number(a.parentSkuId) - Number(b.parentSkuId)) || (Number(a.childSkuId) - Number(b.childSkuId));
       }
-      var p = cmp(a.parentSku, b.parentSku);
+      var p = (Number(a.parentSkuId) - Number(b.parentSkuId)) ||
+              String(a.parentSkuName).localeCompare(String(b.parentSkuName), "en");
       if (p) return p;
       if (state.sortQty){
-        var q = (a.qty - b.qty) * state.sortQty;
-        if (q) return q;
+        var qy = (a.qty - b.qty) * state.sortQty;
+        if (qy) return qy;
       }
-      return cmp(a.childSku, b.childSku);
+      return (Number(a.childSkuId) - Number(b.childSkuId)) ||
+             String(a.childSkuName).localeCompare(String(b.childSkuName), "en");
     });
     return rows;
   }
 
   function renderFilterOptions(){
-    var skus = uniq(state.rows.map(function(r){ return r.parentSku; }).concat(state.rows.map(function(r){ return r.childSku; }))).sort(cmp);
-
-    var fSku = $("#fSku");
-    var keepSku = filters.sku;
-    fSku.innerHTML = '<option value="">全部</option>' + skus.map(function(d){
-      return '<option value="' + esc(d) + '">' + esc(d) + '</option>';
+    var roleSel = $("#fRole");
+    var keep = filters.role;
+    roleSel.innerHTML = '<option value="">全部</option>' + ROLES.map(function(r){
+      return '<option value="' + r + '">' + r + '</option>';
     }).join("");
-    if (skus.indexOf(keepSku) >= 0) fSku.value = keepSku; else filters.sku = "";
+    if (ROLES.indexOf(keep) >= 0) roleSel.value = keep; else filters.role = "";
+  }
 
-    $("#dlParent").innerHTML = uniq(state.rows.map(function(r){ return r.parentSku; })).sort(cmp)
-      .map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
-    $("#dlChild").innerHTML = uniq(state.rows.map(function(r){ return r.childSku; })).sort(cmp)
-      .map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
+  // 弹窗内的作用下拉只在启动时构建一次，避免渲染时把正在编辑的选中值重置
+  function initRoleOptions(){
+    $("#inRole").innerHTML = ROLES.map(function(r){
+      return '<option value="' + r + '">' + r + '</option>';
+    }).join("");
   }
 
   function renderStats(){
     var rows = currentRows();
     $("#sumRows").textContent = rows.length;
-    $("#sumParents").textContent = uniq(rows.map(function(r){ return r.parentSku; })).length;
-    $("#sumChildren").textContent = uniq(rows.map(function(r){ return r.childSku; })).length;
+    $("#sumParents").textContent = uniq(rows.map(function(r){ return r.parentSkuId; })).length;
+    $("#sumChildren").textContent = uniq(rows.map(function(r){ return r.childSkuId; })).length;
     $("#sumRoles").textContent = uniq(rows.map(function(r){ return r.role; })).length;
-    $("#defTitle").textContent = filters.sku ? ("SKU 构成明细 · " + filters.sku) : "SKU 构成明细";
   }
 
   /* ================= 表格 ================= */
+  function idCell(v){
+    return v ? '<span class="sk-id">' + esc(v) + '</span>' : '<span class="na">—</span>';
+  }
+
   function renderTable(){
     var rows = currentRows();
     var total = rows.length;
@@ -866,17 +947,16 @@
       tb.innerHTML = '<tr><td colspan="9"><div class="empty">' +
         '<svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="26" rx="4" stroke="#ccd1dc" stroke-width="2"/><path d="M8 20h32M18 12v8M30 12v8" stroke="#ccd1dc" stroke-width="2"/></svg>' +
         '<div class="big">没有匹配的构成关系</div>' +
-        '<div>调整筛选条件，或点右上角「新增构成」加一条</div></div></td></tr>';
+        '<div>调整筛选条件，或点左上角「新增构成」加一条</div></div></td></tr>';
     } else {
-      // 分组首行标记（仅用于视觉分隔线与悬停联动，不再合并单元格）
       var html = "";
       pageRows.forEach(function(r, i){
-        var newParentGroup = (i === 0) || (pageRows[i - 1].parentSku !== r.parentSku);
-        html += '<tr class="' + (newParentGroup && i > 0 ? "group-start" : "") + '" data-id="' + r.id + '">';
-        html += '<td><span class="sku-link" data-sku="' + esc(r.parentSku) + '">' + esc(r.parentSku) + '</span></td>';
-        html += '<td><span class="sku-id">' + (r.parentSkuId ? esc(r.parentSkuId) : '<span class="na">—</span>') + '</span></td>';
-        html += '<td><span class="sku-plain">' + esc(r.childSku) + '</span></td>';
-        html += '<td><span class="sku-id">' + (r.childSkuId ? esc(r.childSkuId) : '<span class="na">—</span>') + '</span></td>';
+        var newGroup = (i === 0) || (pageRows[i - 1].parentSkuId !== r.parentSkuId);
+        html += '<tr class="' + (newGroup && i > 0 ? "group-start" : "") + '" data-id="' + r.id + '">';
+        html += '<td>' + idCell(r.parentSkuId) + '</td>';
+        html += '<td><span class="sk-name link" data-sku="' + esc(r.parentSkuName) + '">' + esc(r.parentSkuName) + '</span></td>';
+        html += '<td>' + idCell(r.childSkuId) + '</td>';
+        html += '<td><span class="sk-name" data-sku="' + esc(r.childSkuName) + '">' + esc(r.childSkuName) + '</span></td>';
         html += '<td><span class="role ' + roleClass(r.role) + '">' + esc(r.role) + '</span></td>';
         html += '<td><span class="qty">' + r.qty + '<em>件</em></span></td>';
         html += '<td><span class="ts">' + (r.createdAt ? fmtTime(r.createdAt) : '<span class="na">—</span>') + '</span></td>';
@@ -927,25 +1007,24 @@
     }
     var pmap = new Map();
     rows.forEach(function(r){
-      if (!pmap.has(r.parentSku)) pmap.set(r.parentSku, { id: r.parentSkuId || "", kids: [] });
-      var g = pmap.get(r.parentSku);
-      if (!g.id && r.parentSkuId) g.id = r.parentSkuId;
-      g.kids.push(r);
+      if (!pmap.has(r.parentSkuId)) pmap.set(r.parentSkuId, { name: r.parentSkuName, kids: [] });
+      pmap.get(r.parentSkuId).kids.push(r);
     });
 
+    var keys = Array.from(pmap.keys()).sort(function(a, b){ return Number(a) - Number(b); });
     var html = '<div class="tree">';
-    Array.from(pmap.keys()).sort(cmp).forEach(function(parent){
-      var g = pmap.get(parent);
+    keys.forEach(function(pid){
+      var g = pmap.get(pid);
       var kids = g.kids;
       html += '<div class="tree-parent"><span class="brace">&#9500;&#9472;</span>' +
-        '<span class="sku-link" data-sku="' + esc(parent) + '">' + esc(parent) + '</span>' +
-        (g.id ? '<span class="mini-badge mono">' + esc(g.id) + '</span>' : '') +
+        '<span class="mini-badge mono">' + esc(pid) + '</span>' +
+        '<span class="sk-name link" data-sku="' + esc(g.name) + '">' + esc(g.name) + '</span>' +
         '<span class="mini-badge">' + kids.length + ' 个下级</span></div>';
       html += '<div class="tree-children">';
-      kids.slice().sort(function(a, b){ return cmp(a.childSku, b.childSku); }).forEach(function(k){
+      kids.slice().sort(function(a, b){ return Number(a.childSkuId) - Number(b.childSkuId); }).forEach(function(k){
         html += '<div class="tree-child"><span class="brace">&#9492;&#9472;</span>' +
-          '<span class="sku-plain">' + esc(k.childSku) + '</span>' +
-          (k.childSkuId ? '<span class="mini-badge mono">' + esc(k.childSkuId) + '</span>' : '') +
+          '<span class="mini-badge mono">' + esc(k.childSkuId) + '</span>' +
+          '<span class="sk-name">' + esc(k.childSkuName) + '</span>' +
           '<span class="tree-meta">' +
             '<span class="ts">' + (k.createdAt ? fmtTime(k.createdAt) : "") + '</span>' +
             '<span class="role ' + roleClass(k.role) + '">' + esc(k.role) + '</span>' +
@@ -969,9 +1048,144 @@
     $("#treeView").style.display = state.view === "tree" ? "" : "none";
   }
 
+  /* ================= SKU 选择器 ================= */
+  // 每个 picker 的选中值都是一个完整对象 { id, name }，不存在只选一半的状态
+  var picked = { parent: null, child: null };
+
+  function pickerRefs(side){
+    var cap = side === "parent" ? "Parent" : "Child";
+    return {
+      root:    $("#pick" + cap),
+      selBox:  $("#sel" + cap),
+      selId:   $("#sel" + cap + "Id"),
+      selName: $("#sel" + cap + "Name"),
+      search:  $("#search" + cap),
+      input:   $("#in" + cap + "Search"),
+      pop:     $("#pop" + cap)
+    };
+  }
+
+  function paintPicker(side){
+    var ref = pickerRefs(side);
+    var s = picked[side];
+    if (s){
+      ref.selId.textContent = s.id;
+      ref.selName.textContent = s.name;
+      ref.selBox.hidden = false;
+      ref.search.hidden = true;
+      ref.pop.hidden = true;
+    } else {
+      ref.selBox.hidden = true;
+      ref.search.hidden = false;
+    }
+  }
+
+  function paintPop(side, q){
+    var ref = pickerRefs(side);
+    var cat = skuCatalog();
+    var k = String(q || "").trim().toLowerCase();
+    var hits = k ? cat.filter(function(o){
+      return o.id.toLowerCase().indexOf(k) >= 0 || o.name.toLowerCase().indexOf(k) >= 0;
+    }) : cat;
+    hits = hits.slice(0, 80);
+
+    var html = hits.map(function(o){
+      return '<div class="sk-opt" data-opt-id="' + esc(o.id) + '" data-opt-name="' + esc(o.name) + '">' +
+        '<span class="sk-id">' + esc(o.id) + '</span>' +
+        '<span class="sk-name">' + esc(o.name) + '</span></div>';
+    }).join("");
+    if (!hits.length) html = '<div class="sk-none">没有匹配的 SKU，可在下方新建</div>';
+
+    html += '<div class="sk-new">' +
+      '<div class="t">新建 SKU（ID 与名称同时录入，属同一个对象）</div>' +
+      '<div class="r1">' +
+        '<input class="new-id" placeholder="SKU ID" value="' + esc(nextFreeSkuId()) + '" />' +
+        '<input class="new-name" placeholder="SKU 名称" value="' + esc(k && !/^\d+$/.test(k) ? q : "") + '" />' +
+        '<button type="button" class="do-new">添加</button>' +
+      '</div></div>';
+
+    ref.pop.innerHTML = html;
+    ref.pop.hidden = false;
+  }
+
+  function bindPicker(side){
+    var ref = pickerRefs(side);
+
+    ref.input.addEventListener("input", function(){ paintPop(side, this.value); });
+    // 聚焦不自动展开，避免遮挡下方字段；点击输入框时才展开全量列表
+    ref.input.addEventListener("click", function(){ paintPop(side, this.value); });
+
+    ref.input.addEventListener("keydown", function(e){
+      if (e.key === "Enter"){
+        e.preventDefault();
+        var first = ref.pop.querySelector(".sk-opt");
+        if (first){
+          picked[side] = {
+            id: first.getAttribute("data-opt-id"),
+            name: first.getAttribute("data-opt-name")
+          };
+          $("#fi-" + side + "Sku").classList.remove("error");
+          paintPicker(side);
+        }
+      }
+    });
+
+    ref.pop.addEventListener("click", function(e){
+      var opt = e.target.closest(".sk-opt");
+      if (opt){
+        picked[side] = {
+          id: opt.getAttribute("data-opt-id"),
+          name: opt.getAttribute("data-opt-name")
+        };
+        $("#fi-" + side + "Sku").classList.remove("error");
+        paintPicker(side);
+        return;
+      }
+      var addBtn = e.target.closest(".do-new");
+      if (addBtn){
+        var idEl = ref.pop.querySelector(".new-id");
+        var nameEl = ref.pop.querySelector(".new-name");
+        var nid = normalizeId(idEl.value);
+        var name = String(nameEl.value || "").trim();
+
+        if (!/^\d+$/.test(nid)){
+          toast("SKU ID 必须是纯数字", "err");
+          idEl.focus();
+          return;
+        }
+        if (!name){
+          toast("请填写 SKU 名称", "err");
+          nameEl.focus();
+          return;
+        }
+        var conflict = skuCatalog().filter(function(o){
+          return o.id === nid || o.name === name;
+        })[0];
+        if (conflict){
+          toast("该 ID 或名称已被占用，请直接从列表中选择", "err");
+          return;
+        }
+        picked[side] = { id: nid, name: name };
+        $("#fi-" + side + "Sku").classList.remove("error");
+        paintPicker(side);
+        toast("已创建 SKU " + nid + " · " + name, "ok");
+      }
+    });
+
+    // 更换：清空，回到搜索态
+    var chg = side === "parent" ? $("#chgParent") : $("#chgChild");
+    chg.addEventListener("click", function(){
+      picked[side] = null;
+      paintPicker(side);
+      ref.input.value = "";
+      paintPop(side, "");
+      ref.input.focus();
+    });
+  }
+
   /* ================= 弹窗 ================= */
   function clearFormErrors(){
-    ["fi-parent", "fi-parentId", "fi-child", "fi-childId", "fi-role", "fi-qty"].forEach(function(id){
+    ["fi-parentSku", "fi-childSku", "fi-role", "fi-qty"].forEach(function(id){
       $("#" + id).classList.remove("error");
     });
   }
@@ -982,120 +1196,125 @@
   function openEdit(id){
     state.editingId = id || null;
     clearFormErrors();
+
+    var ro = !!id;
+    $("#pickParent").classList.toggle("readonly", ro);
+    $("#pickChild").classList.toggle("readonly", ro);
+
     if (id){
       var r = state.rows.filter(function(x){ return x.id === id; })[0];
       if (!r) return;
       $("#editTitle").textContent = "编辑 SKU 构成";
-      $("#inParent").value = r.parentSku;
-      $("#inParentId").value = r.parentSkuId || "";
-      $("#inChild").value = r.childSku;
-      $("#inChildId").value = r.childSkuId || "";
+      $("#editSub").textContent = "只能修改「作用」与「数量」；SKU 是既有对象，不可替换。";
+      picked.parent = { id: r.parentSkuId, name: r.parentSkuName };
+      picked.child  = { id: r.childSkuId,  name: r.childSkuName  };
       $("#inRole").value = r.role;
       $("#inQty").value = r.qty;
     } else {
       $("#editTitle").textContent = "新增 SKU 构成";
-      $("#inParent").value = "";
-      $("#inParentId").value = "";
-      $("#inChild").value = "";
-      $("#inChildId").value = "";
+      $("#editSub").textContent = "搜索 SKU ID 或名称，选中后该 SKU 的 ID 与名称会一并带入。";
+      picked.parent = null;
+      picked.child = null;
+      $("#inParentSearch").value = "";
+      $("#inChildSearch").value = "";
       $("#inRole").value = "gpu";
       $("#inQty").value = 1;
     }
+    paintPicker("parent");
+    paintPicker("child");
+
     $("#editOverlay").classList.add("show");
-    setTimeout(function(){ $("#inParent").focus(); }, 40);
+    setTimeout(function(){
+      if (ro) $("#inRole").focus();
+      else $("#inParentSearch").focus();
+    }, 40);
   }
+
   function closeEdit(){
     $("#editOverlay").classList.remove("show");
+    $("#popParent").hidden = true;
+    $("#popChild").hidden = true;
     state.editingId = null;
   }
 
-  // SKU ID 归属于 SKU 本身：写入时把该 ID 同步到所有引用同一 SKU 的行
-  function applySkuId(sku, skuId){
+  // SKU 是对象：名称或 ID 变更时，同步到所有引用同一 SKU 的行
+  function syncSku(side, id, name){
     state.rows.forEach(function(r){
-      if (r.parentSku === sku) r.parentSkuId = skuId;
-      if (r.childSku === sku) r.childSkuId = skuId;
+      if (r[side + "SkuId"] === id && r[side + "SkuName"] !== name) r[side + "SkuName"] = name;
     });
   }
 
   function saveEdit(){
     clearFormErrors();
-    var parent = $("#inParent").value.trim();
-    var parentId = $("#inParentId").value.trim().replace(/^(\d+)\.(\d+)$/, "$1$2");
-    var child = $("#inChild").value.trim();
-    var childId = $("#inChildId").value.trim().replace(/^(\d+)\.(\d+)$/, "$1$2");
-    var role = $("#inRole").value.trim();
+    var p = picked.parent;
+    var c = picked.child;
+    var role = $("#inRole").value;
     var qtyRaw = $("#inQty").value;
     var qty = Number(qtyRaw);
     var bad = false;
 
-    if (!parent){ setErr("fi-parent"); bad = true; }
-    if (!parentId){ setErr("fi-parentId"); bad = true; }
-    if (!child){ setErr("fi-child"); bad = true; }
-    if (!childId){ setErr("fi-childId"); bad = true; }
+    if (!p){ setErr("fi-parentSku"); bad = true; }
+    if (!c){ setErr("fi-childSku"); bad = true; }
     if (!role){ setErr("fi-role"); bad = true; }
     if (!qtyRaw || !isFinite(qty) || qty <= 0 || Math.floor(qty) !== qty){ setErr("fi-qty"); bad = true; }
     if (bad){ toast("还有必填项没填对", "err"); return; }
 
-    if (parent === child){
-      setErr("fi-child");
+    if (p.id === c.id){
+      setErr("fi-childSku");
       toast("上级和下级不能是同一个 SKU", "err");
-      return;
-    }
-    if (parentId === childId){
-      setErr("fi-childId");
-      toast("上下级 SKU ID 不能相同", "err");
       return;
     }
 
     var dup = state.rows.filter(function(r){
-      return r.parentSku === parent && r.childSku === child && r.role === role && r.id !== state.editingId;
+      return r.parentSkuId === p.id && r.childSkuId === c.id && r.role === role && r.id !== state.editingId;
     })[0];
     if (dup){
-      setErr("fi-child");
+      setErr("fi-childSku");
       toast("该构成关系已存在（同上级 / 同下级 / 同作用）", "err");
       return;
     }
 
+    var focusId;
     if (state.editingId){
       var t = state.rows.filter(function(x){ return x.id === state.editingId; })[0];
       if (t){
-        t.parentSku = parent; t.parentSkuId = parentId;
-        t.childSku = child; t.childSkuId = childId;
-        t.role = role; t.qty = qty;
+        t.role = role;
+        t.qty = qty;
         t.updatedAt = Date.now();
         if (!t.createdAt) t.createdAt = t.updatedAt;
-        // 同一毫秒内新增并编辑时，至少 +1ms，保证「已修改」状态可辨识
         if (t.updatedAt <= t.createdAt) t.updatedAt = t.createdAt + 1;
       }
+      focusId = state.editingId;
       toast("已更新", "ok");
     } else {
       var nowTs = Date.now();
+      focusId = uid();
       state.rows.push({
-        id: uid(),
-        parentSku: parent, parentSkuId: parentId,
-        childSku: child, childSkuId: childId,
+        id: focusId,
+        parentSkuId: p.id, parentSkuName: p.name,
+        childSkuId: c.id, childSkuName: c.name,
         role: role, qty: qty,
         createdAt: nowTs, updatedAt: nowTs
       });
       toast("已新增 1 条构成", "ok");
     }
-    applySkuId(parent, parentId);
-    applySkuId(child, childId);
+
+    syncSku("parent", p.id, p.name);
+    syncSku("child", c.id, c.name);
     save();
-    var focusId = state.editingId || state.rows[state.rows.length - 1].id;
     closeEdit();
-    // 跳到该记录所在页，避免「加完看不见」的迷惑
     revealRow(focusId);
     render();
   }
 
-  // 把指定记录所在的页码算出来并切过去
   function revealRow(id){
     var list = currentRows();
-    var idx = -1;
-    for (var i = 0; i < list.length; i++){ if (list[i].id === id){ idx = i; break; } }
-    if (idx < 0) return;
-    state.page = Math.floor(idx / state.pageSize) + 1;
+    for (var i = 0; i < list.length; i++){
+      if (list[i].id === id){
+        state.page = Math.floor(i / state.pageSize) + 1;
+        return;
+      }
+    }
   }
 
   /* ================= 确认框 ================= */
@@ -1121,14 +1340,13 @@
     toast("已删除 " + ids.length + " 条构成", "ok");
   }
 
-
   /* ================= 侧边栏 ================= */
   function bindNav(){
     $("#brandToggle").addEventListener("click", function(){ $("#app").classList.toggle("collapsed"); });
     $("#hamburger").addEventListener("click", function(){ $("#app").classList.toggle("collapsed"); });
 
     $$("[data-group]").forEach(function(item){
-      item.addEventListener("click", function(e){
+      item.addEventListener("click", function(){
         var key = item.getAttribute("data-group");
         var sub = $('[data-sub="' + key + '"]');
         if (!sub) return;
@@ -1150,24 +1368,25 @@
   /* ================= 事件 ================= */
   function bind(){
     var t1;
-    $("#fName").addEventListener("input", function(e){
+    $("#fSku").addEventListener("input", function(e){
       clearTimeout(t1);
       var v = e.target.value;
-      t1 = setTimeout(function(){ filters.name = v; state.page = 1; render(); }, 160);
+      t1 = setTimeout(function(){ filters.sku = v; state.page = 1; render(); }, 160);
     });
-    var t2;
-    $("#fId").addEventListener("input", function(e){
-      clearTimeout(t2);
-      var v = e.target.value;
-      t2 = setTimeout(function(){ filters.id = v; state.page = 1; render(); }, 160);
+
+    $("#fRole").addEventListener("change", function(e){
+      filters.role = e.target.value;
+      state.page = 1;
+      render();
     });
-    $("#fSku").addEventListener("change", function(e){
-      filters.sku = e.target.value; state.page = 1; render();
-    });
+
     $("#resetFilters").addEventListener("click", function(){
-      filters.name = filters.id = filters.sku = "";
-      $("#fName").value = ""; $("#fId").value = ""; $("#fSku").value = "";
-      state.page = 1; render();
+      filters.sku = "";
+      filters.role = "";
+      $("#fSku").value = "";
+      $("#fRole").value = "";
+      state.page = 1;
+      render();
       toast("筛选已重置", "ok");
     });
 
@@ -1203,6 +1422,12 @@
     bindSort("#thUpdated", "sortUpdated");
 
     document.addEventListener("click", function(e){
+      // 点击选择器外部时收起下拉
+      ["parent", "child"].forEach(function(side){
+        var ref = pickerRefs(side);
+        if (!ref.pop.hidden && !ref.root.contains(e.target)) ref.pop.hidden = true;
+      });
+
       var actBtn = e.target.closest("[data-act]");
       if (actBtn){
         var id = actBtn.getAttribute("data-id");
@@ -1213,11 +1438,10 @@
           if (!r) return;
           askConfirm("确认删除这条构成", "",
             '<div style="background:#fafbfc;border:1px solid #eceef4;border-radius:6px;padding:10px 12px;line-height:1.9">' +
-              '<div><span style="color:#8a90a0">上级：</span><span class="mono">' + esc(r.parentSku) + '</span>' +
-                (r.parentSkuId ? ' <span style="color:#8a90a0">·</span> <span class="mono" style="color:#8a90a0">' + esc(r.parentSkuId) + '</span>' : '') + '</div>' +
-              '<div><span style="color:#8a90a0">下级：</span><span class="mono">' + esc(r.childSku) + '</span>' +
-                (r.childSkuId ? ' <span style="color:#8a90a0">·</span> <span class="mono" style="color:#8a90a0">' + esc(r.childSkuId) + '</span>' : '') +
-                ' <span style="color:#8a90a0">×</span> ' + r.qty + '</div>' +
+              '<div><span style="color:#8a90a0">上级：</span><span class="sk-id">' + esc(r.parentSkuId) + '</span> ' +
+                '<span class="mono">' + esc(r.parentSkuName) + '</span></div>' +
+              '<div><span style="color:#8a90a0">下级：</span><span class="sk-id">' + esc(r.childSkuId) + '</span> ' +
+                '<span class="mono">' + esc(r.childSkuName) + '</span> <span style="color:#8a90a0">×</span> ' + r.qty + '</div>' +
             '</div>',
             function(){ doDelete([id]); });
         }
@@ -1229,10 +1453,7 @@
         var v = skuEl.getAttribute("data-sku");
         filters.sku = v;
         $("#fSku").value = v;
-        filters.name = "";
-        $("#fName").value = "";
         state.page = 1;
-       
         render();
         toast("已按 SKU 筛选：" + v, "ok");
         return;
@@ -1262,11 +1483,15 @@
     $("#editOverlay").addEventListener("click", function(e){
       if (e.target === $("#editOverlay")) closeEdit();
     });
-    ["inParent", "inParentId", "inChild", "inChildId", "inRole", "inQty"].forEach(function(id){
+
+    ["inRole", "inQty"].forEach(function(id){
       $("#" + id).addEventListener("keydown", function(e){
         if (e.key === "Enter") saveEdit();
       });
     });
+
+    bindPicker("parent");
+    bindPicker("child");
 
     $("#btnCancelConfirm").addEventListener("click", closeConfirm);
     $("#confirmOverlay").addEventListener("click", function(e){
@@ -1290,6 +1515,12 @@
 
     document.addEventListener("keydown", function(e){
       if (e.key === "Escape"){
+        var anyPop = !$("#popParent").hidden || !$("#popChild").hidden;
+        if (anyPop){
+          $("#popParent").hidden = true;
+          $("#popChild").hidden = true;
+          return;
+        }
         if ($("#confirmOverlay").classList.contains("show")) closeConfirm();
         else if ($("#editOverlay").classList.contains("show")) closeEdit();
       }
@@ -1301,6 +1532,7 @@
   /* ================= 启动 ================= */
   var saved = load();
   state.rows = (saved && saved.length) ? saved : seedData();
+  initRoleOptions();
   bind();
   render();
   if (!saved) save();
