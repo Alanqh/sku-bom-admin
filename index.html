@@ -139,13 +139,7 @@
   /* ---------- 1. 标题行 ---------- */
   .page-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
   .page-title{font-size:16px;font-weight:650;letter-spacing:.2px;margin:0}
-  .page-head .spacer{flex:1}
-  .page-head .summary{
-    color:var(--text-3);font-size:12px;display:flex;align-items:center;gap:7px;
-    flex-wrap:wrap;margin-left:2px
-  }
-  .page-head .summary b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
-  .page-head .summary .dot{color:#d3d7e0}
+  .spacer{flex:1}
 
   .btn{
     height:32px;padding:0 13px;border-radius:6px;border:1px solid #dcdfe8;background:#fff;color:var(--text);
@@ -216,10 +210,10 @@
     padding:1px 6px;line-height:17px;word-break:break-all
   }
   .sk-name{
-    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--text-2);
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--link);
     word-break:break-all
   }
-  .sk-name.link{color:var(--link);cursor:pointer}
+  .sk-name.link{cursor:pointer}
   .sk-name.link:hover{text-decoration:underline}
   .na{color:#c4c9d6}
 
@@ -359,9 +353,6 @@
   .toast.err{background:#c4302b}
   @keyframes tin{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
 
-  .page-note{color:#8a90a0;font-size:11.5px;margin-top:12px;line-height:1.8}
-  .page-note b{color:#525866;font-weight:600}
-
   @media (max-width:1100px){
     .env-badge{display:none}
     .content{padding:14px}
@@ -475,27 +466,6 @@
       <!-- ========== 1. 标题 ========== -->
       <div class="page-head">
         <h1 class="page-title">SKU 构成</h1>
-        <div class="summary">
-          <span>共 <b id="sumRows">0</b> 条</span>
-          <span class="dot">·</span>
-          <span><b id="sumParents">0</b> 个上级 SKU</span>
-          <span class="dot">·</span>
-          <span><b id="sumChildren">0</b> 个下级 SKU</span>
-          <span class="dot">·</span>
-          <span><b id="sumRoles">0</b> 种作用</span>
-        </div>
-        <div class="spacer"></div>
-        <div class="seg" id="viewSeg">
-          <button class="on" data-view="group">
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2.4 3.6h11.2M2.4 8h11.2M2.4 12.4h11.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            明细
-          </button>
-          <button data-view="tree">
-            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 3.2v9.4h4.4M4 7h4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="9.2" y="2" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/><rect x="9.2" y="9.6" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/></svg>
-            树形
-          </button>
-        </div>
-        <button class="btn sm ghost" id="btnSeed" title="用初始示例数据覆盖当前数据">恢复示例数据</button>
       </div>
 
       <!-- ========== 2. 新增构成 + 筛选器 ========== -->
@@ -508,8 +478,14 @@
         <div class="filters">
           <div class="fchip">
             <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.2" stroke="currentColor" stroke-width="1.3"/><path d="M10.2 10.2L13.6 13.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
-            <span class="fl">SKU</span>
-            <input id="fSku" placeholder="搜索 SKU ID 或名称" />
+            <span class="fl">上级 SKU</span>
+            <input id="fParentSku" placeholder="搜索上级 ID 或名称" />
+          </div>
+
+          <div class="fchip">
+            <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.2" stroke="currentColor" stroke-width="1.3"/><path d="M10.2 10.2L13.6 13.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+            <span class="fl">下级 SKU</span>
+            <input id="fChildSku" placeholder="搜索下级 ID 或名称" />
           </div>
 
           <div class="fchip">
@@ -522,6 +498,19 @@
           <button class="btn ghost sm" id="resetFilters">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 11-1.6-3.7M13 2.6v2.8h-2.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             重置
+          </button>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="seg" id="viewSeg">
+          <button class="on" data-view="group">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2.4 3.6h11.2M2.4 8h11.2M2.4 12.4h11.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            明细
+          </button>
+          <button data-view="tree">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 3.2v9.4h4.4M4 7h4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="9.2" y="2" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/><rect x="9.2" y="9.6" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/></svg>
+            树形
           </button>
         </div>
       </div>
@@ -566,10 +555,6 @@
         </div>
       </div>
 
-      <div class="page-note">
-        每一行表示一条构成关系：<b>上级 SKU</b> 由 <b>数量 × 下级 SKU</b> 组成，<b>作用</b> 描述该下级在此组合中承担的算力角色。
-        <b>SKU ID</b> 与 <b>SKU Name</b> 是同一个 SKU 的两种属性，始终成对出现、不可分别修改。
-      </div>
     </div>
   </div>
 </div>
@@ -760,7 +745,7 @@
     editingId: null
   };
 
-  var filters = { sku: "", role: "" };
+  var filters = { parentSku: "", childSku: "", role: "" };
 
   function save(){
     try { localStorage.setItem(KEY, JSON.stringify(state.rows)); } catch(e){}
@@ -874,11 +859,17 @@
 
   /* ================= 筛选 ================= */
   function currentRows(){
-    var q = filters.sku.trim().toLowerCase();
+    var pq = filters.parentSku.trim().toLowerCase();
+    var cq = filters.childSku.trim().toLowerCase();
     var rows = state.rows.filter(function(r){
-      if (q){
-        var hay = (r.parentSkuId + " " + r.parentSkuName + " " + r.childSkuId + " " + r.childSkuName).toLowerCase();
-        if (hay.indexOf(q) < 0) return false;
+      // 上下级各自独立搜索：上级框只匹配上级的 ID / 名称，下级框只匹配下级
+      if (pq){
+        var ph = (r.parentSkuId + " " + r.parentSkuName).toLowerCase();
+        if (ph.indexOf(pq) < 0) return false;
+      }
+      if (cq){
+        var ch = (r.childSkuId + " " + r.childSkuName).toLowerCase();
+        if (ch.indexOf(cq) < 0) return false;
       }
       if (filters.role && r.role !== filters.role) return false;
       return true;
@@ -922,16 +913,17 @@
   }
 
   function renderStats(){
-    var rows = currentRows();
-    $("#sumRows").textContent = rows.length;
-    $("#sumParents").textContent = uniq(rows.map(function(r){ return r.parentSkuId; })).length;
-    $("#sumChildren").textContent = uniq(rows.map(function(r){ return r.childSkuId; })).length;
-    $("#sumRoles").textContent = uniq(rows.map(function(r){ return r.role; })).length;
+    // 标题旁的汇总统计已按需求移除，条数统一在分页区展示
   }
 
   /* ================= 表格 ================= */
   function idCell(v){
     return v ? '<span class="sk-id">' + esc(v) + '</span>' : '<span class="na">—</span>';
+  }
+  // 上下级 SKU Name 统一为蓝色链接，点击提示跳转详情页（原型不真跳）
+  function nameCell(name, skuId){
+    return '<span class="sk-name link" data-sku="' + esc(name) + '" data-sku-id="' + esc(skuId || "") + '"' +
+      ' title="点击查看 SKU 详情">' + esc(name) + '</span>';
   }
 
   function renderTable(){
@@ -954,9 +946,9 @@
         var newGroup = (i === 0) || (pageRows[i - 1].parentSkuId !== r.parentSkuId);
         html += '<tr class="' + (newGroup && i > 0 ? "group-start" : "") + '" data-id="' + r.id + '">';
         html += '<td>' + idCell(r.parentSkuId) + '</td>';
-        html += '<td><span class="sk-name link" data-sku="' + esc(r.parentSkuName) + '">' + esc(r.parentSkuName) + '</span></td>';
+        html += '<td>' + nameCell(r.parentSkuName, r.parentSkuId) + '</td>';
         html += '<td>' + idCell(r.childSkuId) + '</td>';
-        html += '<td><span class="sk-name" data-sku="' + esc(r.childSkuName) + '">' + esc(r.childSkuName) + '</span></td>';
+        html += '<td>' + nameCell(r.childSkuName, r.childSkuId) + '</td>';
         html += '<td><span class="role ' + roleClass(r.role) + '">' + esc(r.role) + '</span></td>';
         html += '<td><span class="qty">' + r.qty + '<em>件</em></span></td>';
         html += '<td><span class="ts">' + (r.createdAt ? fmtTime(r.createdAt) : '<span class="na">—</span>') + '</span></td>';
@@ -1018,13 +1010,13 @@
       var kids = g.kids;
       html += '<div class="tree-parent"><span class="brace">&#9500;&#9472;</span>' +
         '<span class="mini-badge mono">' + esc(pid) + '</span>' +
-        '<span class="sk-name link" data-sku="' + esc(g.name) + '">' + esc(g.name) + '</span>' +
+        nameCell(g.name, pid) +
         '<span class="mini-badge">' + kids.length + ' 个下级</span></div>';
       html += '<div class="tree-children">';
       kids.slice().sort(function(a, b){ return Number(a.childSkuId) - Number(b.childSkuId); }).forEach(function(k){
         html += '<div class="tree-child"><span class="brace">&#9492;&#9472;</span>' +
           '<span class="mini-badge mono">' + esc(k.childSkuId) + '</span>' +
-          '<span class="sk-name">' + esc(k.childSkuName) + '</span>' +
+          nameCell(k.childSkuName, k.childSkuId) +
           '<span class="tree-meta">' +
             '<span class="ts">' + (k.createdAt ? fmtTime(k.createdAt) : "") + '</span>' +
             '<span class="role ' + roleClass(k.role) + '">' + esc(k.role) + '</span>' +
@@ -1367,11 +1359,18 @@
 
   /* ================= 事件 ================= */
   function bind(){
-    var t1;
-    $("#fSku").addEventListener("input", function(e){
-      clearTimeout(t1);
+    // 上下级 SKU 各自独立的搜索框，互不影响
+    var tP;
+    $("#fParentSku").addEventListener("input", function(e){
+      clearTimeout(tP);
       var v = e.target.value;
-      t1 = setTimeout(function(){ filters.sku = v; state.page = 1; render(); }, 160);
+      tP = setTimeout(function(){ filters.parentSku = v; state.page = 1; render(); }, 160);
+    });
+    var tC;
+    $("#fChildSku").addEventListener("input", function(e){
+      clearTimeout(tC);
+      var v = e.target.value;
+      tC = setTimeout(function(){ filters.childSku = v; state.page = 1; render(); }, 160);
     });
 
     $("#fRole").addEventListener("change", function(e){
@@ -1381,9 +1380,11 @@
     });
 
     $("#resetFilters").addEventListener("click", function(){
-      filters.sku = "";
+      filters.parentSku = "";
+      filters.childSku = "";
       filters.role = "";
-      $("#fSku").value = "";
+      $("#fParentSku").value = "";
+      $("#fChildSku").value = "";
       $("#fRole").value = "";
       state.page = 1;
       render();
@@ -1450,12 +1451,10 @@
 
       var skuEl = e.target.closest("[data-sku]");
       if (skuEl){
-        var v = skuEl.getAttribute("data-sku");
-        filters.sku = v;
-        $("#fSku").value = v;
-        state.page = 1;
-        render();
-        toast("已按 SKU 筛选：" + v, "ok");
+        // 原型不真跳转：仅提示将跳转到该 SKU 的详情页
+        var name = skuEl.getAttribute("data-sku");
+        var sid = skuEl.getAttribute("data-sku-id") || "";
+        toast("即将跳转 SKU 详情页：" + (sid ? sid + " · " : "") + name, "ok");
         return;
       }
     });
@@ -1501,16 +1500,6 @@
       var cb = confirmCb;
       closeConfirm();
       if (cb) cb();
-    });
-
-    $("#btnSeed").addEventListener("click", function(){
-      askConfirm("恢复示例数据", "当前所有构成关系会被替换为初始示例数据。", "", function(){
-        state.rows = seedData();
-        state.page = 1;
-        save();
-        render();
-        toast("已恢复示例数据", "ok");
-      }, "覆盖并恢复");
     });
 
     document.addEventListener("keydown", function(e){
