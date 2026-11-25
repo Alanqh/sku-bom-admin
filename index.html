@@ -208,18 +208,27 @@
   tbody td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle;color:var(--text)}
   tbody tr:hover td{background:#fafbff}
   tbody tr.group-start td{border-top:1px solid var(--line)}
-  td.def-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px;background:#fcfcfe}
-  td.parent-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px}
 
-  .def-name{font-weight:600;color:var(--text);font-size:12.5px}
-  .def-count{color:var(--text-3);font-size:11.5px;margin-top:4px}
   .sku-link{
     font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--link);
     cursor:pointer;word-break:break-all
   }
   .sku-link:hover{text-decoration:underline}
   .sku-plain{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--text-2)}
-  .sub-count{color:var(--text-3);font-size:11.5px;margin-top:4px}
+  .sku-id{
+    display:inline-block;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;
+    color:#5b6070;background:#f4f5f9;border:1px solid #eceef4;border-radius:4px;
+    padding:1px 6px;line-height:17px;word-break:break-all
+  }
+  .na{color:#c4c9d6}
+  .ts{
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:#5b6070;
+    white-space:nowrap;font-variant-numeric:tabular-nums
+  }
+  .ts .edited{
+    margin-left:5px;font-family:inherit;font-size:10px;line-height:15px;padding:0 4px;border-radius:3px;
+    background:#fff3e6;color:#c2761a;font-weight:600;vertical-align:1px
+  }
 
   .role{
     display:inline-flex;align-items:center;gap:5px;border-radius:4px;padding:1px 7px;font-size:12px;
@@ -255,18 +264,15 @@
 
   /* ---------- 树形 ---------- */
   .tree{padding:4px 0}
-  .tree-def{
-    padding:10px 14px;font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:9px;
-    background:#fafbfc;border-bottom:1px solid var(--line-2);border-top:1px solid var(--line-2)
-  }
-  .tree-def:first-child{border-top:0}
   .tree-parent{padding:9px 14px 9px 30px;display:flex;align-items:center;gap:9px;border-bottom:1px dashed var(--line-2)}
+  .tree-parent:first-child{padding-top:12px}
   .tree-children{padding:4px 14px 10px 46px;display:flex;flex-direction:column;gap:5px}
   .tree-child{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line-2);border-radius:6px;background:#fff}
   .tree-child:hover{border-color:var(--purple-line);background:#fcfbff}
   .brace{color:#ccd1dc;font-family:monospace;font-size:11.5px;flex:none}
   .tree-meta{margin-left:auto;display:flex;align-items:center;gap:10px}
   .mini-badge{font-size:10.5px;color:var(--text-3);background:#f2f3f7;border-radius:3px;padding:0 5px;line-height:16px}
+  .mini-badge.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;color:#5b6070;background:#f4f5f9;border:1px solid #eceef4}
 
   /* ---------- 弹窗 ---------- */
   .overlay{
@@ -434,18 +440,12 @@
         </div>
         <div class="fchip">
           <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.6 3.6h10.8l-4.1 4.9v3.9l-2.6-1.2V8.5L2.6 3.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
-          <span class="fl">售卖项包含</span>
-          <input id="fSell" placeholder="如 faas-instance" />
-        </div>
-        <div class="fchip">
-          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 4.6h10M3 8h10M3 11.4h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
-          <span class="fl">SKU 定义</span>
-          <select id="fDef"><option value="">全部</option></select>
-          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="fl">SKU ID 包含</span>
+          <input id="fId" placeholder="如 15380" />
         </div>
         <div class="fchip">
           <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.4 7.4V3.8a1.4 1.4 0 011.4-1.4h3.4l6 6-4.8 4.8-6-6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.4" cy="5.4" r=".8" fill="currentColor"/></svg></span>
-          <span class="fl">SKU ID 是</span>
+          <span class="fl">SKU 是</span>
           <select id="fSku"><option value="">全部</option></select>
           <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </div>
@@ -486,12 +486,15 @@
             <table>
               <thead>
                 <tr>
-                  <th style="width:272px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
-                  <th style="width:210px">SKU Definition<span style="font-weight:400;color:#aab0bf">（上级类型）</span></th>
-                  <th style="width:225px">下级 SKU</th>
-                  <th style="width:110px">作用</th>
-                  <th style="width:88px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
-                  <th style="width:90px;text-align:right">操作</th>
+                  <th style="width:230px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
+                  <th style="width:110px">SKU ID</th>
+                  <th style="width:200px">下级 SKU</th>
+                  <th style="width:110px">SKU ID</th>
+                  <th style="width:100px">作用</th>
+                  <th style="width:80px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
+                  <th style="width:138px" class="sortable" id="thCreated"><span class="th-in">创建时间 <span class="caret">↕</span></span></th>
+                  <th style="width:138px" class="sortable" id="thUpdated"><span class="th-in">更新时间 <span class="caret">↕</span></span></th>
+                  <th style="width:84px;text-align:right">操作</th>
                 </tr>
               </thead>
               <tbody id="tbody"></tbody>
@@ -518,7 +521,7 @@
 
       <div class="page-note">
         每一行表示一条构成关系：<b>上级 SKU</b> 由 <b>数量 × 下级 SKU</b> 组成，<b>作用</b> 描述该下级在此组合中承担的算力角色。
-        <b>SKU Definition</b> 是上级 SKU 的类型，同一类型下「上级 + 下级 + 作用」需唯一。点击 SKU 名称可快速按该 SKU 筛选。
+        每条关系的上下级 SKU 各自带有独立的 <b>SKU ID</b>；<b>创建时间</b> 与 <b>更新时间</b> 记录这条关系的变动轨迹。点击 SKU 名称可快速按该 SKU 筛选。
       </div>
     </div>
   </div>
@@ -540,17 +543,21 @@
         <datalist id="dlParent"></datalist>
         <div class="hint">被组合出来的商品规格</div>
       </div>
-      <div class="form-item full" id="fi-def">
-        <label>SKU Definition<span style="color:#8a90a0;font-weight:400">（上级 SKU 的类型）</span> <span class="req">*</span></label>
-        <input id="inDef" list="dlDef" placeholder="如 faas-instance-component" autocomplete="off" />
-        <datalist id="dlDef"></datalist>
-        <div class="hint" id="hintDef">同一类型下共享一套构成规则</div>
+      <div class="form-item full" id="fi-parentId">
+        <label>上级 SKU ID <span class="req">*</span></label>
+        <input id="inParentId" placeholder="如 15380" autocomplete="off" />
+        <div class="hint">上级 SKU 的唯一标识</div>
       </div>
       <div class="form-item full" id="fi-child">
         <label>下级 SKU <span class="req">*</span></label>
         <input id="inChild" list="dlChild" placeholder="如 nvidia.h200.amd64" autocomplete="off" />
         <datalist id="dlChild"></datalist>
         <div class="hint">被计入组合的原子规格</div>
+      </div>
+      <div class="form-item full" id="fi-childId">
+        <label>下级 SKU ID <span class="req">*</span></label>
+        <input id="inChildId" placeholder="如 15381" autocomplete="off" />
+        <div class="hint">下级 SKU 的唯一标识</div>
       </div>
       <div class="form-item" id="fi-role">
         <label>作用 <span class="req">*</span></label>
@@ -634,9 +641,7 @@
       ["nvidia.rtx4090.g1.amd64", "nvidia.rtx4090.amd64", 1],
       ["nvidia.rtx4090.g2.amd64", "nvidia.rtx4090.amd64", 2],
       ["nvidia.rtx4090.g4.amd64", "nvidia.rtx4090.amd64", 4]
-    ].map(function(a){
-      return { id: uid(), definition: "faas-instance-component", parentSku: a[0], childSku: a[1], role: "gpu", qty: a[2] };
-    });
+    ];
 
     var extra = [
       ["faas.pod.small.amd64", "faas.vcpu.2c.amd64", "cpu", 2],
@@ -647,11 +652,45 @@
       ["faas.pod.large.amd64", "faas.vcpu.8c.amd64", "cpu", 8],
       ["faas.pod.large.amd64", "faas.memory.32g", "memory", 32],
       ["faas.pod.large.amd64", "faas.nic.10g", "network", 1]
-    ].map(function(a){
-      return { id: uid(), definition: "faas-instance-basic", parentSku: a[0], childSku: a[1], role: a[2], qty: a[3] };
+    ];
+
+    // SKU ID 归属于 SKU 本身：同一 SKU 无论作上级还是下级，ID 一致
+    var idMap = {};
+    var seq = 380;
+    function skuIdOf(sku){
+      if (!idMap[sku]) idMap[sku] = String(15000 + (seq++));
+      return idMap[sku];
+    }
+
+    var rows = g.map(function(a){
+      return {
+        id: uid(),
+        parentSku: a[0], parentSkuId: skuIdOf(a[0]),
+        childSku: a[1], childSkuId: skuIdOf(a[1]),
+        role: "gpu", qty: a[2]
+      };
+    }).concat(extra.map(function(a){
+      return {
+        id: uid(),
+        parentSku: a[0], parentSkuId: skuIdOf(a[0]),
+        childSku: a[1], childSkuId: skuIdOf(a[1]),
+        role: a[2], qty: a[3]
+      };
+    }));
+
+    // 造一批看起来合理的时间戳：创建时间往前铺开，部分记录后续被编辑过
+    var now = Date.now();
+    var HOUR = 3600 * 1000;
+    rows.forEach(function(r, i){
+      var created = now - (rows.length - i) * 7 * HOUR - (i % 5) * 37 * 60 * 1000;
+      var updated = created;
+      if (i % 3 === 0) updated = created + (i % 4 + 1) * 11 * HOUR;
+      if (updated > now) updated = now - (i % 6) * 13 * 60 * 1000;
+      r.createdAt = created;
+      r.updatedAt = updated;
     });
 
-    return g.concat(extra);
+    return rows;
   }
 
   /* ================= 状态 ================= */
@@ -661,6 +700,8 @@
     pageSize: 20,
     view: "group",
     sortQty: 0,
+    sortCreated: 0,
+    sortUpdated: 0,
     editingId: null
   };
 
@@ -673,16 +714,46 @@
       if (!raw) return null;
       var arr = JSON.parse(raw);
       if (!Array.isArray(arr)) return null;
-      return arr.filter(function(r){ return r && r.definition && r.parentSku && r.childSku; }).map(function(r){
+      var rows = arr.filter(function(r){ return r && r.parentSku && r.childSku; }).map(function(r){
+        var created = Number(r.createdAt) > 0 ? Number(r.createdAt) : (Number(r.updatedAt) > 0 ? Number(r.updatedAt) : Date.now());
+        var updated = Number(r.updatedAt) > 0 ? Number(r.updatedAt) : created;
         return {
           id: r.id || uid(),
-          definition: String(r.definition),
           parentSku: String(r.parentSku),
+          parentSkuId: r.parentSkuId ? String(r.parentSkuId) : "",
           childSku: String(r.childSku),
+          childSkuId: r.childSkuId ? String(r.childSkuId) : "",
           role: String(r.role || "gpu"),
-          qty: Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1
+          qty: Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1,
+          createdAt: created,
+          updatedAt: updated
         };
       });
+      // 旧版本的 SKU ID 形如 "15.385"，现统一为纯数字 "15385"
+      var normId = function(v){
+        var s = String(v == null ? "" : v).trim();
+        return s.replace(/^(\d+)\.(\d+)$/, "$1$2");
+      };
+      rows.forEach(function(r){
+        r.parentSkuId = normId(r.parentSkuId);
+        r.childSkuId = normId(r.childSkuId);
+      });
+      // SKU ID 归属于 SKU 本身：同一 SKU 在所有行里必须同一个 ID
+      var idMap = {};
+      var seq = 380;
+      function nextId(){
+        var candidate;
+        var used = Object.keys(idMap).map(function(k){ return idMap[k]; });
+        do { candidate = String(15000 + (seq++)); } while (used.indexOf(candidate) >= 0);
+        return candidate;
+      }
+      rows.forEach(function(r){
+        if (!idMap[r.parentSku]) idMap[r.parentSku] = r.parentSkuId || nextId();
+        if (!idMap[r.childSku]) idMap[r.childSku] = r.childSkuId || nextId();
+        r.parentSkuId = idMap[r.parentSku];
+        r.childSkuId = idMap[r.childSku];
+      });
+      return rows;
     } catch(e){ return null; }
   }
 
@@ -705,22 +776,46 @@
   function uniq(a){ return Array.from(new Set(a)); }
   function cmp(a, b){ return String(a).localeCompare(String(b), "en"); }
 
+  function pad2(n){ return n < 10 ? "0" + n : String(n); }
+  function fmtTime(ts){
+    var d = new Date(Number(ts));
+    if (!ts || isNaN(d.getTime())) return "";
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) +
+      " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  }
+  function relTime(ts){
+    var n = Number(ts);
+    if (!n) return "";
+    var diff = Date.now() - n;
+    if (diff < 60 * 1000) return "刚刚";
+    if (diff < 3600 * 1000) return Math.floor(diff / 60000) + " 分钟前";
+    if (diff < 86400 * 1000) return Math.floor(diff / 3600000) + " 小时前";
+    if (diff < 30 * 86400 * 1000) return Math.floor(diff / 86400000) + " 天前";
+    return "";
+  }
+
   /* ================= 筛选 ================= */
-  var filters = { name: "", sell: "", def: "", sku: "" };
+  var filters = { name: "", id: "", sku: "" };
 
   function currentRows(){
     var n = filters.name.trim().toLowerCase();
-    var s = filters.sell.trim().toLowerCase();
+    var idq = filters.id.trim().toLowerCase();
     var rows = state.rows.filter(function(r){
       if (n && !(r.parentSku.toLowerCase().indexOf(n) >= 0 || r.childSku.toLowerCase().indexOf(n) >= 0)) return false;
-      if (s && !(r.definition.toLowerCase().indexOf(s) >= 0)) return false;
-      if (filters.def && r.definition !== filters.def) return false;
+      if (idq && !((r.parentSkuId || "").toLowerCase().indexOf(idq) >= 0 || (r.childSkuId || "").toLowerCase().indexOf(idq) >= 0)) return false;
       if (filters.sku && r.parentSku !== filters.sku && r.childSku !== filters.sku) return false;
       return true;
     });
     rows.sort(function(a, b){
-      var d = cmp(a.definition, b.definition);
-      if (d) return d;
+      // 时间排序激活时，时间为主键（不再按上级 SKU 归组）
+      if (state.sortCreated || state.sortUpdated){
+        var dir = state.sortCreated || state.sortUpdated;
+        var ka = state.sortCreated ? (a.createdAt || 0) : (a.updatedAt || 0);
+        var kb = state.sortCreated ? (b.createdAt || 0) : (b.updatedAt || 0);
+        var t = (ka - kb) * dir;
+        if (t) return t;
+        return cmp(a.parentSku, b.parentSku) || cmp(a.childSku, b.childSku);
+      }
       var p = cmp(a.parentSku, b.parentSku);
       if (p) return p;
       if (state.sortQty){
@@ -733,15 +828,7 @@
   }
 
   function renderFilterOptions(){
-    var defs = uniq(state.rows.map(function(r){ return r.definition; })).sort(cmp);
     var skus = uniq(state.rows.map(function(r){ return r.parentSku; }).concat(state.rows.map(function(r){ return r.childSku; }))).sort(cmp);
-
-    var fDef = $("#fDef");
-    var keepDef = filters.def;
-    fDef.innerHTML = '<option value="">全部</option>' + defs.map(function(d){
-      return '<option value="' + esc(d) + '">' + esc(d) + '</option>';
-    }).join("");
-    if (defs.indexOf(keepDef) >= 0) fDef.value = keepDef; else filters.def = "";
 
     var fSku = $("#fSku");
     var keepSku = filters.sku;
@@ -750,7 +837,6 @@
     }).join("");
     if (skus.indexOf(keepSku) >= 0) fSku.value = keepSku; else filters.sku = "";
 
-    $("#dlDef").innerHTML = defs.map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
     $("#dlParent").innerHTML = uniq(state.rows.map(function(r){ return r.parentSku; })).sort(cmp)
       .map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
     $("#dlChild").innerHTML = uniq(state.rows.map(function(r){ return r.childSku; })).sort(cmp)
@@ -763,21 +849,10 @@
     $("#sumParents").textContent = uniq(rows.map(function(r){ return r.parentSku; })).length;
     $("#sumChildren").textContent = uniq(rows.map(function(r){ return r.childSku; })).length;
     $("#sumRoles").textContent = uniq(rows.map(function(r){ return r.role; })).length;
-    $("#defTitle").textContent = filters.def ? ("SKU 构成明细 · " + filters.def) : "SKU 构成明细";
+    $("#defTitle").textContent = filters.sku ? ("SKU 构成明细 · " + filters.sku) : "SKU 构成明细";
   }
 
   /* ================= 表格 ================= */
-  function findDefStart(rows, i){
-    for (var k = i - 1; k >= 0; k--) if (rows[k].definition !== rows[i].definition) return k + 1;
-    return 0;
-  }
-  function findParentStart(rows, i){
-    for (var k = i - 1; k >= 0; k--){
-      if (rows[k].definition !== rows[i].definition || rows[k].parentSku !== rows[i].parentSku) return k + 1;
-    }
-    return 0;
-  }
-
   function renderTable(){
     var rows = currentRows();
     var total = rows.length;
@@ -788,52 +863,25 @@
     var tb = $("#tbody");
 
     if (!pageRows.length){
-      tb.innerHTML = '<tr><td colspan="6"><div class="empty">' +
+      tb.innerHTML = '<tr><td colspan="9"><div class="empty">' +
         '<svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="26" rx="4" stroke="#ccd1dc" stroke-width="2"/><path d="M8 20h32M18 12v8M30 12v8" stroke="#ccd1dc" stroke-width="2"/></svg>' +
         '<div class="big">没有匹配的构成关系</div>' +
         '<div>调整筛选条件，或点右上角「新增构成」加一条</div></div></td></tr>';
     } else {
-      var defSpan = {}, parentSpan = {};
-      pageRows.forEach(function(r, i){
-        var dStart = (i === 0) || (pageRows[i - 1].definition !== r.definition);
-        var pStart = dStart || (pageRows[i - 1].parentSku !== r.parentSku);
-        if (dStart) defSpan[r.definition + "#" + i] = 1;
-        if (pStart) parentSpan[r.definition + "||" + r.parentSku + "#" + i] = 1;
-        if (i > 0 && !dStart){
-          var ds = findDefStart(pageRows, i);
-          var dk = pageRows[ds].definition + "#" + ds;
-          defSpan[dk] = (defSpan[dk] || 1) + 1;
-        }
-        if (i > 0 && !pStart){
-          var ps = findParentStart(pageRows, i);
-          var pk = pageRows[ps].definition + "||" + pageRows[ps].parentSku + "#" + ps;
-          parentSpan[pk] = (parentSpan[pk] || 1) + 1;
-        }
-      });
-
+      // 分组首行标记（仅用于视觉分隔线与悬停联动，不再合并单元格）
       var html = "";
       pageRows.forEach(function(r, i){
-        var dStart = (i === 0) || (pageRows[i - 1].definition !== r.definition);
-        var pStart = dStart || (pageRows[i - 1].parentSku !== r.parentSku);
-        html += '<tr class="' + (dStart ? "group-start" : "") + '" data-id="' + r.id + '">';
-        if (pStart){
-          var key = r.definition + "||" + r.parentSku;
-          var pspan = parentSpan[key + "#" + i] || 1;
-          var totalOfParent = rows.filter(function(x){ return x.definition === r.definition && x.parentSku === r.parentSku; }).length;
-          html += '<td class="parent-cell" rowspan="' + pspan + '">' +
-            '<span class="sku-link" data-sku="' + esc(r.parentSku) + '">' + esc(r.parentSku) + '</span>' +
-            (totalOfParent > 1 ? '<div class="sub-count">' + totalOfParent + ' 个下级</div>' : "") + '</td>';
-        }
-        if (dStart){
-          var span = defSpan[r.definition + "#" + i] || 1;
-          var totalOfDef = rows.filter(function(x){ return x.definition === r.definition; }).length;
-          html += '<td class="def-cell" rowspan="' + span + '">' +
-            '<div class="def-name">' + esc(r.definition) + '</div>' +
-            '<div class="def-count">' + totalOfDef + ' 条构成</div></td>';
-        }
+        var newParentGroup = (i === 0) || (pageRows[i - 1].parentSku !== r.parentSku);
+        html += '<tr class="' + (newParentGroup && i > 0 ? "group-start" : "") + '" data-id="' + r.id + '">';
+        html += '<td><span class="sku-link" data-sku="' + esc(r.parentSku) + '">' + esc(r.parentSku) + '</span></td>';
+        html += '<td><span class="sku-id">' + (r.parentSkuId ? esc(r.parentSkuId) : '<span class="na">—</span>') + '</span></td>';
         html += '<td><span class="sku-plain">' + esc(r.childSku) + '</span></td>';
+        html += '<td><span class="sku-id">' + (r.childSkuId ? esc(r.childSkuId) : '<span class="na">—</span>') + '</span></td>';
         html += '<td><span class="role ' + roleClass(r.role) + '">' + esc(r.role) + '</span></td>';
         html += '<td><span class="qty">' + r.qty + '<em>件</em></span></td>';
+        html += '<td><span class="ts">' + (r.createdAt ? fmtTime(r.createdAt) : '<span class="na">—</span>') + '</span></td>';
+        html += '<td><span class="ts">' + (r.updatedAt ? fmtTime(r.updatedAt) : '<span class="na">—</span>') +
+          (r.updatedAt && r.createdAt && r.updatedAt > r.createdAt ? '<span class="edited">改</span>' : '') + '</span></td>';
         html += '<td><div class="ops">' +
           '<button class="op-link" data-act="edit" data-id="' + r.id + '">编辑</button>' +
           '<button class="op-link del" data-act="del" data-id="' + r.id + '">删除</button>' +
@@ -877,38 +925,36 @@
       box.innerHTML = '<div class="empty"><div class="big">没有匹配的构成关系</div><div>调整筛选条件试试</div></div>';
       return;
     }
-    var byDef = new Map();
+    var pmap = new Map();
     rows.forEach(function(r){
-      if (!byDef.has(r.definition)) byDef.set(r.definition, new Map());
-      var pm = byDef.get(r.definition);
-      if (!pm.has(r.parentSku)) pm.set(r.parentSku, []);
-      pm.get(r.parentSku).push(r);
+      if (!pmap.has(r.parentSku)) pmap.set(r.parentSku, { id: r.parentSkuId || "", kids: [] });
+      var g = pmap.get(r.parentSku);
+      if (!g.id && r.parentSkuId) g.id = r.parentSkuId;
+      g.kids.push(r);
     });
 
     var html = '<div class="tree">';
-    Array.from(byDef.keys()).sort(cmp).forEach(function(def){
-      var pm = byDef.get(def);
-      var totalCnt = Array.from(pm.values()).reduce(function(a, b){ return a + b.length; }, 0);
-      html += '<div class="tree-def"><span class="def-name">' + esc(def) + '</span>' +
-        '<span class="mini-badge">' + pm.size + ' 个上级 / ' + totalCnt + ' 条构成</span></div>';
-      Array.from(pm.keys()).sort(cmp).forEach(function(parent){
-        var kids = pm.get(parent);
-        html += '<div class="tree-parent"><span class="brace">&#9500;&#9472;</span>' +
-          '<span class="sku-link" data-sku="' + esc(parent) + '">' + esc(parent) + '</span>' +
-          '<span class="mini-badge">' + kids.length + ' 个下级</span></div>';
-        html += '<div class="tree-children">';
-        kids.slice().sort(function(a, b){ return cmp(a.childSku, b.childSku); }).forEach(function(k){
-          html += '<div class="tree-child"><span class="brace">&#9492;&#9472;</span>' +
-            '<span class="sku-plain">' + esc(k.childSku) + '</span>' +
-            '<span class="tree-meta">' +
-              '<span class="role ' + roleClass(k.role) + '">' + esc(k.role) + '</span>' +
-              '<span class="qty">&times;' + k.qty + '</span>' +
-              '<button class="op-link" data-act="edit" data-id="' + k.id + '">编辑</button>' +
-              '<button class="op-link del" data-act="del" data-id="' + k.id + '">删除</button>' +
-            '</span></div>';
-        });
-        html += '</div>';
+    Array.from(pmap.keys()).sort(cmp).forEach(function(parent){
+      var g = pmap.get(parent);
+      var kids = g.kids;
+      html += '<div class="tree-parent"><span class="brace">&#9500;&#9472;</span>' +
+        '<span class="sku-link" data-sku="' + esc(parent) + '">' + esc(parent) + '</span>' +
+        (g.id ? '<span class="mini-badge mono">' + esc(g.id) + '</span>' : '') +
+        '<span class="mini-badge">' + kids.length + ' 个下级</span></div>';
+      html += '<div class="tree-children">';
+      kids.slice().sort(function(a, b){ return cmp(a.childSku, b.childSku); }).forEach(function(k){
+        html += '<div class="tree-child"><span class="brace">&#9492;&#9472;</span>' +
+          '<span class="sku-plain">' + esc(k.childSku) + '</span>' +
+          (k.childSkuId ? '<span class="mini-badge mono">' + esc(k.childSkuId) + '</span>' : '') +
+          '<span class="tree-meta">' +
+            '<span class="ts">' + (k.createdAt ? fmtTime(k.createdAt) : "") + '</span>' +
+            '<span class="role ' + roleClass(k.role) + '">' + esc(k.role) + '</span>' +
+            '<span class="qty">&times;' + k.qty + '</span>' +
+            '<button class="op-link" data-act="edit" data-id="' + k.id + '">编辑</button>' +
+            '<button class="op-link del" data-act="del" data-id="' + k.id + '">删除</button>' +
+          '</span></div>';
       });
+      html += '</div>';
     });
     html += '</div>';
     box.innerHTML = html;
@@ -925,20 +971,12 @@
 
   /* ================= 弹窗 ================= */
   function clearFormErrors(){
-    ["fi-def", "fi-parent", "fi-child", "fi-role", "fi-qty"].forEach(function(id){
+    ["fi-parent", "fi-parentId", "fi-child", "fi-childId", "fi-role", "fi-qty"].forEach(function(id){
       $("#" + id).classList.remove("error");
     });
-    var h = $("#hintDef");
-    h.textContent = "同一类型下共享一套构成规则";
-    h.style.color = "";
   }
-  function setErr(id, hintId, msg){
+  function setErr(id){
     $("#" + id).classList.add("error");
-    if (hintId){
-      var h = $("#" + hintId);
-      h.textContent = msg;
-      h.style.color = "#f53f3f";
-    }
   }
 
   function openEdit(id){
@@ -948,16 +986,18 @@
       var r = state.rows.filter(function(x){ return x.id === id; })[0];
       if (!r) return;
       $("#editTitle").textContent = "编辑 SKU 构成";
-      $("#inDef").value = r.definition;
       $("#inParent").value = r.parentSku;
+      $("#inParentId").value = r.parentSkuId || "";
       $("#inChild").value = r.childSku;
+      $("#inChildId").value = r.childSkuId || "";
       $("#inRole").value = r.role;
       $("#inQty").value = r.qty;
     } else {
       $("#editTitle").textContent = "新增 SKU 构成";
-      $("#inDef").value = filters.def || "";
       $("#inParent").value = "";
+      $("#inParentId").value = "";
       $("#inChild").value = "";
+      $("#inChildId").value = "";
       $("#inRole").value = "gpu";
       $("#inQty").value = 1;
     }
@@ -969,49 +1009,93 @@
     state.editingId = null;
   }
 
+  // SKU ID 归属于 SKU 本身：写入时把该 ID 同步到所有引用同一 SKU 的行
+  function applySkuId(sku, skuId){
+    state.rows.forEach(function(r){
+      if (r.parentSku === sku) r.parentSkuId = skuId;
+      if (r.childSku === sku) r.childSkuId = skuId;
+    });
+  }
+
   function saveEdit(){
     clearFormErrors();
-    var def = $("#inDef").value.trim();
     var parent = $("#inParent").value.trim();
+    var parentId = $("#inParentId").value.trim().replace(/^(\d+)\.(\d+)$/, "$1$2");
     var child = $("#inChild").value.trim();
+    var childId = $("#inChildId").value.trim().replace(/^(\d+)\.(\d+)$/, "$1$2");
     var role = $("#inRole").value.trim();
     var qtyRaw = $("#inQty").value;
     var qty = Number(qtyRaw);
     var bad = false;
 
-    if (!def){ setErr("fi-def", "hintDef", "请填写 SKU Definition"); bad = true; }
-    if (!parent){ setErr("fi-parent", null, ""); bad = true; }
-    if (!child){ setErr("fi-child", null, ""); bad = true; }
-    if (!role){ setErr("fi-role", null, ""); bad = true; }
-    if (!qtyRaw || !isFinite(qty) || qty <= 0 || Math.floor(qty) !== qty){ setErr("fi-qty", null, ""); bad = true; }
+    if (!parent){ setErr("fi-parent"); bad = true; }
+    if (!parentId){ setErr("fi-parentId"); bad = true; }
+    if (!child){ setErr("fi-child"); bad = true; }
+    if (!childId){ setErr("fi-childId"); bad = true; }
+    if (!role){ setErr("fi-role"); bad = true; }
+    if (!qtyRaw || !isFinite(qty) || qty <= 0 || Math.floor(qty) !== qty){ setErr("fi-qty"); bad = true; }
     if (bad){ toast("还有必填项没填对", "err"); return; }
 
     if (parent === child){
-      $("#fi-child").classList.add("error");
+      setErr("fi-child");
       toast("上级和下级不能是同一个 SKU", "err");
+      return;
+    }
+    if (parentId === childId){
+      setErr("fi-childId");
+      toast("上下级 SKU ID 不能相同", "err");
       return;
     }
 
     var dup = state.rows.filter(function(r){
-      return r.definition === def && r.parentSku === parent && r.childSku === child && r.role === role && r.id !== state.editingId;
+      return r.parentSku === parent && r.childSku === child && r.role === role && r.id !== state.editingId;
     })[0];
     if (dup){
-      $("#fi-child").classList.add("error");
-      toast("该构成关系已存在（同定义 / 同上级 / 同下级 / 同作用）", "err");
+      setErr("fi-child");
+      toast("该构成关系已存在（同上级 / 同下级 / 同作用）", "err");
       return;
     }
 
     if (state.editingId){
       var t = state.rows.filter(function(x){ return x.id === state.editingId; })[0];
-      if (t){ t.definition = def; t.parentSku = parent; t.childSku = child; t.role = role; t.qty = qty; }
+      if (t){
+        t.parentSku = parent; t.parentSkuId = parentId;
+        t.childSku = child; t.childSkuId = childId;
+        t.role = role; t.qty = qty;
+        t.updatedAt = Date.now();
+        if (!t.createdAt) t.createdAt = t.updatedAt;
+        // 同一毫秒内新增并编辑时，至少 +1ms，保证「已修改」状态可辨识
+        if (t.updatedAt <= t.createdAt) t.updatedAt = t.createdAt + 1;
+      }
       toast("已更新", "ok");
     } else {
-      state.rows.push({ id: uid(), definition: def, parentSku: parent, childSku: child, role: role, qty: qty });
+      var nowTs = Date.now();
+      state.rows.push({
+        id: uid(),
+        parentSku: parent, parentSkuId: parentId,
+        childSku: child, childSkuId: childId,
+        role: role, qty: qty,
+        createdAt: nowTs, updatedAt: nowTs
+      });
       toast("已新增 1 条构成", "ok");
     }
+    applySkuId(parent, parentId);
+    applySkuId(child, childId);
     save();
+    var focusId = state.editingId || state.rows[state.rows.length - 1].id;
     closeEdit();
+    // 跳到该记录所在页，避免「加完看不见」的迷惑
+    revealRow(focusId);
     render();
+  }
+
+  // 把指定记录所在的页码算出来并切过去
+  function revealRow(id){
+    var list = currentRows();
+    var idx = -1;
+    for (var i = 0; i < list.length; i++){ if (list[i].id === id){ idx = i; break; } }
+    if (idx < 0) return;
+    state.page = Math.floor(idx / state.pageSize) + 1;
   }
 
   /* ================= 确认框 ================= */
@@ -1072,20 +1156,17 @@
       t1 = setTimeout(function(){ filters.name = v; state.page = 1; render(); }, 160);
     });
     var t2;
-    $("#fSell").addEventListener("input", function(e){
+    $("#fId").addEventListener("input", function(e){
       clearTimeout(t2);
       var v = e.target.value;
-      t2 = setTimeout(function(){ filters.sell = v; state.page = 1; render(); }, 160);
-    });
-    $("#fDef").addEventListener("change", function(e){
-      filters.def = e.target.value; state.page = 1; render();
+      t2 = setTimeout(function(){ filters.id = v; state.page = 1; render(); }, 160);
     });
     $("#fSku").addEventListener("change", function(e){
       filters.sku = e.target.value; state.page = 1; render();
     });
     $("#resetFilters").addEventListener("click", function(){
-      filters.name = filters.sell = filters.def = filters.sku = "";
-      $("#fName").value = ""; $("#fSell").value = ""; $("#fDef").value = ""; $("#fSku").value = "";
+      filters.name = filters.id = filters.sku = "";
+      $("#fName").value = ""; $("#fId").value = ""; $("#fSku").value = "";
       state.page = 1; render();
       toast("筛选已重置", "ok");
     });
@@ -1099,12 +1180,27 @@
       });
     });
 
-    $("#thQty").addEventListener("click", function(){
-      state.sortQty = state.sortQty === 0 ? 1 : (state.sortQty === 1 ? -1 : 0);
-      this.classList.toggle("sorted", state.sortQty !== 0);
-      this.querySelector(".caret").textContent = state.sortQty === 0 ? "↕" : (state.sortQty === 1 ? "↑" : "↓");
-      render();
-    });
+    // 数量 / 创建时间 / 更新时间：三列互斥排序（升序 → 降序 → 取消）
+    function bindSort(sel, field){
+      var thSelf = $(sel);
+      var selfId = thSelf.id;
+      thSelf.addEventListener("click", function(){
+        var next = state[field] === 0 ? 1 : (state[field] === 1 ? -1 : 0);
+        state.sortQty = state.sortCreated = state.sortUpdated = 0;
+        state[field] = next;
+        $$("thead th.sortable").forEach(function(th){
+          var own = th.id === selfId;
+          th.classList.toggle("sorted", own && next !== 0);
+          var c = th.querySelector(".caret");
+          if (c) c.textContent = (own && next !== 0) ? (next === 1 ? "↑" : "↓") : "↕";
+        });
+        state.page = 1;
+        render();
+      });
+    }
+    bindSort("#thQty", "sortQty");
+    bindSort("#thCreated", "sortCreated");
+    bindSort("#thUpdated", "sortUpdated");
 
     document.addEventListener("click", function(e){
       var actBtn = e.target.closest("[data-act]");
@@ -1117,9 +1213,11 @@
           if (!r) return;
           askConfirm("确认删除这条构成", "",
             '<div style="background:#fafbfc;border:1px solid #eceef4;border-radius:6px;padding:10px 12px;line-height:1.9">' +
-              '<div><span style="color:#8a90a0">定义：</span>' + esc(r.definition) + '</div>' +
-              '<div><span style="color:#8a90a0">上级：</span><span class="mono">' + esc(r.parentSku) + '</span></div>' +
-              '<div><span style="color:#8a90a0">下级：</span><span class="mono">' + esc(r.childSku) + '</span> <span style="color:#8a90a0">×</span> ' + r.qty + '</div>' +
+              '<div><span style="color:#8a90a0">上级：</span><span class="mono">' + esc(r.parentSku) + '</span>' +
+                (r.parentSkuId ? ' <span style="color:#8a90a0">·</span> <span class="mono" style="color:#8a90a0">' + esc(r.parentSkuId) + '</span>' : '') + '</div>' +
+              '<div><span style="color:#8a90a0">下级：</span><span class="mono">' + esc(r.childSku) + '</span>' +
+                (r.childSkuId ? ' <span style="color:#8a90a0">·</span> <span class="mono" style="color:#8a90a0">' + esc(r.childSkuId) + '</span>' : '') +
+                ' <span style="color:#8a90a0">×</span> ' + r.qty + '</div>' +
             '</div>',
             function(){ doDelete([id]); });
         }
@@ -1164,7 +1262,7 @@
     $("#editOverlay").addEventListener("click", function(e){
       if (e.target === $("#editOverlay")) closeEdit();
     });
-    ["inDef", "inParent", "inChild", "inRole", "inQty"].forEach(function(id){
+    ["inParent", "inParentId", "inChild", "inChildId", "inRole", "inQty"].forEach(function(id){
       $("#" + id).addEventListener("keydown", function(e){
         if (e.key === "Enter") saveEdit();
       });
