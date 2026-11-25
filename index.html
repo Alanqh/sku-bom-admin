@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GPU 库存 · SKU 构成</title>
+<style>
+  :root{
+    --purple:#6b4cf0;
+    --purple-dark:#5a3ae0;
+    --purple-weak:#f2eeff;
+    --purple-line:#ded3ff;
+    --link:#2f6bff;
+
+    --bg:#f7f8fa;
+    --white:#fff;
+    --line:#e9eaf0;
+    --line-2:#f0f1f5;
+    --text:#1d2129;
+    --text-2:#525866;
+    --text-3:#8a90a0;
+    --danger:#f53f3f;
+    --danger-weak:#fff1f0;
+    --sidebar-w:212px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    font-size:13px;-webkit-font-smoothing:antialiased;overflow:hidden;
+  }
+  button,input,select{font-family:inherit;font-size:13px}
+  .mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+
+  /* ============ 骨架 ============ */
+  .app{display:flex;height:100vh;overflow:hidden}
+
+  /* ---------- 侧边栏 ---------- */
+  .sidebar{
+    width:var(--sidebar-w);flex:none;background:#fff;border-right:1px solid var(--line);
+    display:flex;flex-direction:column;transition:width .18s ease;overflow:hidden
+  }
+  .brand{display:flex;align-items:center;gap:9px;padding:14px 14px 15px;flex:none}
+  .brand-logo{
+    width:26px;height:26px;border-radius:7px;flex:none;
+    background:linear-gradient(135deg,#8a6bff,#5f3df0);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12.5px;
+    box-shadow:0 2px 6px rgba(107,76,240,.32)
+  }
+  .brand-name{font-size:15px;font-weight:650;letter-spacing:.2px;white-space:nowrap;color:#22263a}
+  .brand-toggle{
+    margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:6px;
+    width:23px;height:23px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--text-3);flex:none;padding:0
+  }
+  .brand-toggle:hover{background:#f6f7fb;color:var(--text-2)}
+
+  .nav{flex:1;overflow-y:auto;padding:2px 8px 18px}
+  .nav::-webkit-scrollbar{width:5px}
+  .nav::-webkit-scrollbar-thumb{background:#dcdfe8;border-radius:3px}
+
+  .nav-item{
+    display:flex;align-items:center;gap:9px;height:34px;padding:0 9px;border-radius:7px;
+    color:var(--text-2);cursor:pointer;user-select:none;white-space:nowrap;position:relative;
+    transition:background .12s,color .12s;margin-bottom:1px
+  }
+  .nav-item:hover{background:#f6f7fb;color:var(--text)}
+  .nav-item .ni{width:15px;height:15px;flex:none;display:flex;align-items:center;justify-content:center;color:#8f95a6}
+  .nav-item .label{flex:1;overflow:hidden;text-overflow:ellipsis}
+  .nav-item .chev{flex:none;color:#b3b8c5;transition:transform .16s;display:flex}
+  .nav-item.open > .chev{transform:rotate(90deg)}
+  .nav-item.section{height:33px;color:#3d4256;font-weight:600;margin-top:8px}
+  .nav-item.section.active{color:var(--purple)}
+  .nav-item.section.active .ni{color:var(--purple)}
+
+  .nav-sub{padding:1px 0;overflow:hidden}
+  .nav-sub[hidden]{display:none}
+  .nav-sub .nav-item{height:32px;padding-left:33px;font-size:13px;color:#5b6070}
+  .nav-sub .nav-item::before{
+    content:"";position:absolute;left:19px;top:50%;transform:translateY(-50%);
+    width:4px;height:4px;border-radius:50%;background:#c6cad6
+  }
+  .nav-sub .nav-item.active{background:var(--purple-weak);color:var(--purple);font-weight:600}
+  .nav-sub .nav-item.active::before{background:var(--purple)}
+  .nav-sub .nav-item.active .ni{color:var(--purple)}
+
+  /* 三级 */
+  .nav-sub2 .nav-item{padding-left:47px;height:30px;font-size:12.5px}
+  .nav-sub2 .nav-item::before{left:33px;width:3px;height:3px}
+
+  .tag-new{
+    margin-left:auto;flex:none;font-size:10px;line-height:15px;padding:0 5px;border-radius:3px;
+    background:#fff3e6;color:#d97706;font-weight:600
+  }
+
+  .sidebar-foot{
+    flex:none;border-top:1px solid var(--line);padding:10px 14px;display:flex;align-items:center;gap:8px;
+    color:var(--text-3);font-size:12px;white-space:nowrap
+  }
+  .ver-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex:none}
+
+  .app.collapsed .sidebar{width:58px}
+  .app.collapsed .brand-name,.app.collapsed .nav-item .label,
+  .app.collapsed .nav-item .chev,.app.collapsed .tag-new,
+  .app.collapsed .sidebar-foot span{display:none}
+  .app.collapsed .brand{padding:14px 0;justify-content:center}
+  .app.collapsed .brand-toggle{display:none}
+  .app.collapsed .nav-item{justify-content:center;padding:0}
+  .app.collapsed .nav-sub{display:none!important}
+
+  /* ---------- 主区 ---------- */
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+
+  .topbar{
+    height:52px;flex:none;background:#fff;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 16px;gap:12px;position:relative
+  }
+  .hamburger{border:0;background:transparent;color:var(--text-2);cursor:pointer;padding:4px;border-radius:6px;display:flex}
+  .hamburger:hover{background:#f4f5f9}
+  .env-badge{
+    position:absolute;left:50%;transform:translateX(-50%);
+    color:#e0342c;font-weight:600;font-size:13px;white-space:nowrap;letter-spacing:.2px
+  }
+  .top-right{margin-left:auto;display:flex;align-items:center;gap:13px}
+  .top-icon{
+    width:28px;height:28px;border-radius:7px;border:0;background:transparent;color:#6b7280;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;padding:0
+  }
+  .top-icon:hover{background:#f4f5f9;color:var(--text)}
+  .badge-dot{position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:#f53f3f;border:1.5px solid #fff}
+  .switch{width:34px;height:18px;border-radius:9px;background:#d7dae3;position:relative;cursor:pointer;flex:none}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.16s;box-shadow:0 1px 2px rgba(0,0,0,.15)}
+  .switch.on{background:var(--purple)}
+  .switch.on::after{left:18px}
+  .avatar{width:26px;height:26px;border-radius:50%;background:#e8eaf2;color:#5b6070;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;flex:none}
+  .avatar:hover{outline:2px solid var(--purple-line)}
+
+  .content{flex:1;overflow-y:auto;padding:18px 22px 40px}
+  .content::-webkit-scrollbar{width:8px}
+  .content::-webkit-scrollbar-thumb{background:#dcdfe8;border-radius:4px;border:2px solid var(--bg)}
+
+  /* ---------- 页面头 ---------- */
+  .crumb{display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:12px;margin-bottom:10px}
+  .crumb .sep{color:#c8ccd8}
+  .crumb .cur{color:var(--text-2)}
+
+  .page-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .page-title{font-size:16px;font-weight:650;letter-spacing:.2px;margin:0}
+  .page-head .spacer{flex:1}
+
+  .btn{
+    height:32px;padding:0 13px;border-radius:6px;border:1px solid #dcdfe8;background:#fff;color:var(--text);
+    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    transition:.14s;white-space:nowrap;font-weight:500
+  }
+  .btn:hover{border-color:#c4c9d6;background:#fafbfd}
+  .btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:0 2px 6px rgba(107,76,240,.25)}
+  .btn.primary:hover{background:var(--purple-dark);border-color:var(--purple-dark)}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--text-2);padding:0 9px}
+  .btn.ghost:hover{background:#f4f5f9;color:var(--text)}
+  .btn.sm{height:27px;padding:0 10px;font-size:12.5px;border-radius:5px}
+  .btn.danger-text{color:var(--danger);border-color:#f8cfcf}
+  .btn.danger-text:hover{background:var(--danger-weak)}
+  .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+  .btn.danger:hover{background:#dc3232;border-color:#dc3232}
+
+  /* ---------- 页签 ---------- */
+  .tabs{display:flex;align-items:center;gap:26px;border-bottom:1px solid var(--line);margin:0 0 14px;padding:0 2px}
+  .tab{
+    position:relative;padding:9px 0 10px;color:var(--text-2);cursor:pointer;font-size:13px;white-space:nowrap;
+    border-bottom:2px solid transparent;margin-bottom:-1px;transition:.14s
+  }
+  .tab:hover{color:var(--purple)}
+  .tab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:600}
+
+  /* ---------- 筛选 ---------- */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .fchip{
+    display:flex;align-items:center;height:34px;border:1px solid #dcdfe8;border-radius:6px;background:#fff;transition:.14s;min-width:0
+  }
+  .fchip:hover{border-color:#c4c9d6}
+  .fchip:focus-within{border-color:var(--purple);box-shadow:0 0 0 3px rgba(107,76,240,.1)}
+  .fchip .fi{padding:0 7px 0 10px;color:#8a90a0;display:flex;align-items:center;flex:none}
+  .fchip .fl{color:var(--text-2);white-space:nowrap;flex:none;font-size:12.5px}
+  .fchip input{border:0;outline:0;background:transparent;height:100%;padding:0 8px;width:132px;color:var(--text);font-size:12.5px}
+  .fchip input::placeholder{color:#b6bac6}
+  .fchip select{
+    border:0;outline:0;background:transparent;height:100%;padding:0 4px 0 8px;min-width:120px;max-width:170px;
+    color:var(--text);font-size:12.5px;cursor:pointer;appearance:none;text-overflow:ellipsis
+  }
+  .fchip .chev{padding:0 9px 0 2px;color:#8a90a0;display:flex;flex:none}
+  .filters .spacer{flex:1}
+
+  /* ---------- 卡片 / 表格 ---------- */
+  .card{background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.03)}
+  .card-head{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+  .card-title{font-size:13.5px;font-weight:650}
+  .summary{color:var(--text-3);font-size:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .summary b{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+  .summary .dot{color:#d3d7e0}
+  .card-head .spacer{flex:1}
+
+  .seg{display:inline-flex;border:1px solid #dcdfe8;border-radius:6px;overflow:hidden;background:#fff}
+  .seg button{
+    border:0;background:#fff;color:var(--text-2);height:28px;padding:0 11px;cursor:pointer;font-size:12.5px;
+    display:flex;align-items:center;gap:5px;border-right:1px solid #eceef4
+  }
+  .seg button:last-child{border-right:0}
+  .seg button.on{background:var(--purple-weak);color:var(--purple);font-weight:600}
+
+  .selbar{
+    display:none;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--purple-line);
+    background:var(--purple-weak);color:#4b2fd0;font-size:12.5px;font-weight:500
+  }
+  .selbar.show{display:flex}
+
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:separate;border-spacing:0;min-width:940px}
+  thead th{
+    background:#fafbfc;color:#6b7280;font-weight:600;text-align:left;font-size:12px;
+    padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap
+  }
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--purple)}
+  th .th-in{display:inline-flex;align-items:center;gap:5px}
+  th .caret{opacity:.4;font-size:10px}
+  th.sorted{color:var(--purple)}
+  th.sorted .caret{opacity:1}
+
+  tbody td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle;color:var(--text)}
+  tbody tr:hover td{background:#fafbff}
+  tbody tr.sel td{background:#f5f1ff}
+  tbody tr.group-start td{border-top:1px solid var(--line)}
+  td.def-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px;background:#fcfcfe}
+  td.parent-cell{border-right:1px solid var(--line-2);vertical-align:top;padding-top:11px}
+
+  .def-name{font-weight:600;color:var(--text);font-size:12.5px}
+  .def-count{color:var(--text-3);font-size:11.5px;margin-top:4px}
+  .sku-link{
+    font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--link);
+    cursor:pointer;word-break:break-all
+  }
+  .sku-link:hover{text-decoration:underline}
+  .sku-plain{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--text-2)}
+  .sub-count{color:var(--text-3);font-size:11.5px;margin-top:4px}
+
+  .role{
+    display:inline-flex;align-items:center;gap:5px;border-radius:4px;padding:1px 7px;font-size:12px;
+    font-weight:500;background:#f2f3f7;color:#5b6070;line-height:18px
+  }
+  .role::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.8}
+  .role.gpu{background:#f3eeff;color:#7048e8}
+  .role.cpu{background:#eaf1ff;color:#2f6bff}
+  .role.memory{background:#e9f9ef;color:#0f9d58}
+  .role.disk{background:#fff4e6;color:#c2761a}
+  .role.network{background:#e7f8fa;color:#0d8fa8}
+
+  .qty{font-variant-numeric:tabular-nums;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-weight:600;color:var(--text)}
+  .qty em{font-style:normal;font-size:11px;color:var(--text-3);font-weight:400;margin-left:2px}
+
+  .ops{display:flex;gap:12px;justify-content:flex-end;font-size:12.5px}
+  .op-link{border:0;background:transparent;padding:0;cursor:pointer;color:var(--link);font-size:12.5px}
+  .op-link:hover{text-decoration:underline}
+  .op-link.del{color:#e5484d}
+
+  .empty{padding:56px 16px;text-align:center;color:var(--text-3)}
+  .empty .big{font-size:13.5px;color:var(--text-2);margin:10px 0 4px}
+
+  .card-foot{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line-2);flex-wrap:wrap;background:#fff}
+  .page-size{display:flex;align-items:center;gap:6px;color:var(--text-3);font-size:12.5px}
+  .page-size select{height:26px;border-radius:5px;border:1px solid #dcdfe8;background:#fff;padding:0 5px;color:var(--text-2);font-size:12px}
+  .pager{margin-left:auto;display:flex;align-items:center;gap:4px}
+  .pager button{min-width:27px;height:27px;border-radius:5px;border:1px solid #dcdfe8;background:#fff;cursor:pointer;color:var(--text-2);font-size:12.5px;padding:0 6px}
+  .pager button:hover:not(:disabled){border-color:var(--purple);color:var(--purple)}
+  .pager button.on{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:600}
+  .pager button:disabled{opacity:.45;cursor:not-allowed}
+  .pager .total{color:var(--text-3);margin-left:8px;font-size:12px}
+
+  .checkbox{width:14px;height:14px;accent-color:var(--purple);cursor:pointer;vertical-align:-2px}
+
+  /* ---------- 树形 ---------- */
+  .tree{padding:4px 0}
+  .tree-def{
+    padding:10px 14px;font-weight:600;font-size:12.5px;display:flex;align-items:center;gap:9px;
+    background:#fafbfc;border-bottom:1px solid var(--line-2);border-top:1px solid var(--line-2)
+  }
+  .tree-def:first-child{border-top:0}
+  .tree-parent{padding:9px 14px 9px 30px;display:flex;align-items:center;gap:9px;border-bottom:1px dashed var(--line-2)}
+  .tree-children{padding:4px 14px 10px 46px;display:flex;flex-direction:column;gap:5px}
+  .tree-child{display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid var(--line-2);border-radius:6px;background:#fff}
+  .tree-child:hover{border-color:var(--purple-line);background:#fcfbff}
+  .brace{color:#ccd1dc;font-family:monospace;font-size:11.5px;flex:none}
+  .tree-meta{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .mini-badge{font-size:10.5px;color:var(--text-3);background:#f2f3f7;border-radius:3px;padding:0 5px;line-height:16px}
+
+  /* ---------- 弹窗 ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(20,22,33,.38);display:none;align-items:flex-start;justify-content:center;
+    z-index:80;padding:64px 16px 24px;overflow-y:auto
+  }
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:10px;width:520px;max-width:100%;box-shadow:0 16px 48px rgba(16,24,40,.2);animation:pop .15s ease-out}
+  @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+  .modal-head{padding:16px 18px 0;display:flex;align-items:flex-start;gap:10px}
+  .modal-head h3{margin:0;font-size:15px;font-weight:650}
+  .modal-head p{margin:4px 0 0;color:var(--text-3);font-size:12px;line-height:1.5}
+  .modal-body{padding:16px 18px 4px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-item{display:flex;flex-direction:column;gap:6px}
+  .form-item.full{grid-column:1/-1}
+  .form-item label{font-size:12px;color:var(--text-2);font-weight:500;display:flex;align-items:center;gap:3px}
+  .form-item label .req{color:var(--danger)}
+  .form-item input,.form-item select{
+    height:33px;border:1px solid #dcdfe8;border-radius:6px;padding:0 10px;outline:0;background:#fff;color:var(--text);width:100%;font-size:12.5px
+  }
+  .form-item input:focus,.form-item select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(107,76,240,.1)}
+  .form-item .hint{font-size:11.5px;color:var(--text-3)}
+  .form-item.error input,.form-item.error select{border-color:var(--danger);box-shadow:0 0 0 3px rgba(245,63,63,.08)}
+  .form-item.error .hint{color:var(--danger)}
+  .modal-foot{padding:12px 18px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line-2);margin-top:14px}
+  .modal.confirm{width:430px}
+  .modal.confirm .modal-body{display:block;color:var(--text-2);line-height:1.65;font-size:12.5px}
+
+  /* ---------- toast ---------- */
+  .toasts{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:95;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .toast{
+    background:#22263a;color:#fff;padding:9px 14px;border-radius:7px;font-size:12.5px;
+    box-shadow:0 8px 24px rgba(16,24,40,.24);animation:tin .16s ease-out;display:flex;align-items:center;gap:7px;max-width:80vw
+  }
+  .toast.ok{background:#1a7f4b}
+  .toast.err{background:#c4302b}
+  @keyframes tin{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none}}
+
+  .page-note{color:#8a90a0;font-size:11.5px;margin-top:12px;line-height:1.8}
+  .page-note b{color:#525866;font-weight:600}
+
+  @media (max-width:1100px){
+    .env-badge{display:none}
+    .content{padding:14px}
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ================= 侧边栏 ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">硅</div>
+      <div class="brand-name">硅基流动</div>
+      <button class="brand-toggle" id="brandToggle" title="折叠侧边栏">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-item" data-nav="管理后台">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.3" stroke="currentColor" stroke-width="1.2"/><path d="M8 5.2v3l2 1.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        <span class="label">管理后台</span>
+        <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+
+      <div class="nav-item" data-nav="账户中心">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.6" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.3 12.8c.6-2.2 2.4-3.3 4.7-3.3s4.1 1.1 4.7 3.3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+        <span class="label">账户中心</span>
+      </div>
+
+      <div class="nav-item" data-nav="活动运营">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2.6 6.6v2.8M5 4.9v6.2M8 3.3v9.4M11 5.7v4.6M13.4 7v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>
+        <span class="label">活动运营</span>
+        <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+
+      <div class="nav-item" data-nav="MaaS 运营管理">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="4.4" height="4.4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9.1" y="2.5" width="4.4" height="4.4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2.5" y="9.1" width="4.4" height="4.4" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9.1" y="9.1" width="4.4" height="4.4" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></span>
+        <span class="label">MaaS 运营管理</span>
+      </div>
+
+      <div class="nav-item" data-nav="弹性 GPU 运营管理">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M9.2 1.9L3.7 8.7h3.4l-.9 5.4 5.6-6.9H8.3l.9-5.3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
+        <span class="label">弹性 GPU 运营管理</span>
+      </div>
+
+      <!-- 商品定价中心 -->
+      <div class="nav-item section active open" data-group="pricing">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2.7 6.6V3.7a1 1 0 011-1h2.9l6.5 6.5-3.9 3.9L2.7 6.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.6" cy="5.6" r=".85" fill="currentColor"/></svg></span>
+        <span class="label">商品定价中心</span>
+        <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+
+      <div class="nav-sub" data-sub="pricing">
+        <div class="nav-item" data-nav="商品管理">
+          <span class="label">商品管理</span>
+        </div>
+        <div class="nav-item" data-nav="定价计划">
+          <span class="label">定价计划</span>
+        </div>
+
+        <!-- GPU 库存 + 二级菜单 SKU 构成 -->
+        <div class="nav-item open" data-group="gpuStock">
+          <span class="label">GPU 库存</span>
+          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+
+        <div class="nav-sub nav-sub2" data-sub="gpuStock">
+          <div class="nav-item active" data-nav="SKU 构成">
+            <span class="label">SKU 构成</span>
+            <span class="tag-new">NEW</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-item section" data-group="platform">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3" width="11" height="10" rx="1.4" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 6.3h11" stroke="currentColor" stroke-width="1.2"/></svg></span>
+        <span class="label">平台管理</span>
+        <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+
+      <div class="nav-item section" data-group="rnd">
+        <span class="ni"><svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 2.3l5.3 3.1v5.3L8 13.8 2.7 10.7V5.4L8 2.3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
+        <span class="label">研发功能</span>
+        <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M6 3.5L10.5 8 6 12.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <span class="ver-dot"></span>
+      <span>v2.14.3 · 生产环境</span>
+    </div>
+  </aside>
+
+  <!-- ================= 主区 ================= -->
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" id="hamburger" title="展开/收起导航">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="env-badge">【admin-uat2-测试环境】</div>
+      <div class="top-right">
+        <button class="top-icon" title="通知">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.4 6.6a3.6 3.6 0 017.2 0v2.2l1.1 2H3.3l1.1-2V6.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M6.6 12.4a1.5 1.5 0 002.8 0" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span class="badge-dot"></span>
+        </button>
+        <div class="switch on" id="themeSwitch" title="界面开关"></div>
+        <div class="avatar" title="lqh">lqh</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="crumb">
+        <span>商品定价中心</span>
+        <span class="sep">/</span>
+        <span>GPU 库存</span>
+        <span class="sep">/</span>
+        <span class="cur">SKU 构成</span>
+      </div>
+
+      <div class="page-head">
+        <h1 class="page-title">SKU 构成</h1>
+        <div class="spacer"></div>
+        <button class="btn" id="btnImport" title="导入 JSON / CSV">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2.4v7.6m0 0L5.2 7.2M8 10l2.8-2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 11v1.4A1.4 1.4 0 004.2 13.8h7.6a1.4 1.4 0 001.4-1.4V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          导入
+        </button>
+        <button class="btn" id="btnExport" title="导出当前筛选结果为 CSV">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 10V2.4m0 0L5.2 5.2M8 2.4l2.8 2.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.8 11v1.4A1.4 1.4 0 004.2 13.8h7.6a1.4 1.4 0 001.4-1.4V11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          导出
+        </button>
+        <button class="btn primary" id="btnAdd">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3.2v9.6M3.2 8h9.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          新增构成
+        </button>
+        <input type="file" id="fileInput" accept=".json,.csv,text/csv,application/json" style="display:none" />
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="list">构成关系</div>
+        <div class="tab" data-tab="summary">按上级 SKU 汇总</div>
+        <div class="tab" data-tab="log">变更记录</div>
+      </div>
+
+      <div class="filters">
+        <div class="fchip">
+          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2.2" y="2.6" width="11.6" height="10.8" rx="1.6" stroke="currentColor" stroke-width="1.2"/><path d="M4.6 6h6.8M4.6 9h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+          <span class="fl">SKU 名称包含</span>
+          <input id="fName" placeholder="如 nvidia.h200" />
+        </div>
+        <div class="fchip">
+          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.6 3.6h10.8l-4.1 4.9v3.9l-2.6-1.2V8.5L2.6 3.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></span>
+          <span class="fl">售卖项包含</span>
+          <input id="fSell" placeholder="如 faas-instance" />
+        </div>
+        <div class="fchip">
+          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 4.6h10M3 8h10M3 11.4h6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+          <span class="fl">SKU 定义</span>
+          <select id="fDef"><option value="">全部</option></select>
+          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <div class="fchip">
+          <span class="fi"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2.4 7.4V3.8a1.4 1.4 0 011.4-1.4h3.4l6 6-4.8 4.8-6-6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="5.4" cy="5.4" r=".8" fill="currentColor"/></svg></span>
+          <span class="fl">SKU ID 是</span>
+          <select id="fSku"><option value="">全部</option></select>
+          <span class="chev"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><path d="M4 6.2L8 10.2 12 6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </div>
+        <button class="btn ghost sm" id="resetFilters">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 11-1.6-3.7M13 2.6v2.8h-2.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          重置
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title" id="defTitle">SKU 构成明细</div>
+          <div class="summary">
+            <span>共 <b id="sumRows">0</b> 条构成</span>
+            <span class="dot">·</span>
+            <span><b id="sumParents">0</b> 个上级</span>
+            <span class="dot">·</span>
+            <span><b id="sumChildren">0</b> 个下级</span>
+            <span class="dot">·</span>
+            <span><b id="sumRoles">0</b> 种作用</span>
+          </div>
+          <div class="spacer"></div>
+          <div class="seg" id="viewSeg">
+            <button class="on" data-view="group">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2.4 3.6h11.2M2.4 8h11.2M2.4 12.4h11.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+              明细
+            </button>
+            <button data-view="tree">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M4 3.2v9.4h4.4M4 7h4.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><rect x="9.2" y="2" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/><rect x="9.2" y="9.6" width="4.8" height="2.8" rx=".9" stroke="currentColor" stroke-width="1.2"/></svg>
+              树形
+            </button>
+          </div>
+          <button class="btn sm ghost" id="btnSeed" title="用初始示例数据覆盖当前数据">恢复示例数据</button>
+        </div>
+
+        <div class="selbar" id="selbar">
+          <span id="selCount">已选 0 项</span>
+          <button class="btn sm danger-text" id="btnBatchDel" style="height:24px">批量删除</button>
+          <button class="btn sm ghost" id="btnClearSel" style="height:24px">取消选择</button>
+        </div>
+
+        <div id="tableView">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:38px"><input type="checkbox" class="checkbox" id="checkAll" /></th>
+                  <th style="width:210px">SKU Definition</th>
+                  <th style="width:260px">SKU<span style="font-weight:400;color:#aab0bf">（上级）</span></th>
+                  <th style="width:225px">下级 SKU</th>
+                  <th style="width:110px">作用</th>
+                  <th style="width:88px" class="sortable" id="thQty"><span class="th-in">数量 <span class="caret">↕</span></span></th>
+                  <th style="width:90px;text-align:right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="treeView" style="display:none"></div>
+
+        <div class="card-foot">
+          <div class="page-size">
+            每页
+            <select id="pageSizeSel">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+              <option value="200">200</option>
+            </select>
+            条
+          </div>
+          <div class="pager" id="pager"></div>
+        </div>
+      </div>
+
+      <div class="page-note">
+        每一行表示一条构成关系：<b>上级 SKU</b> 由 <b>数量 × 下级 SKU</b> 组成，<b>作用</b> 描述该下级在此组合中承担的算力角色。
+        同一 SKU Definition 下，上级 + 下级 + 作用 需唯一。点击 SKU 名称可快速按该 SKU 筛选。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 新增 / 编辑弹窗 -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="editTitle">新增 SKU 构成</h3>
+        <p id="editSub">描述「下级 SKU 以何种作用、多少个，挂在上级 SKU 之下」。</p>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="form-item full" id="fi-def">
+        <label>SKU Definition <span class="req">*</span></label>
+        <input id="inDef" list="dlDef" placeholder="如 faas-instance-component" autocomplete="off" />
+        <datalist id="dlDef"></datalist>
+        <div class="hint" id="hintDef">构成定义分组名，同一定义下共享一套构成规则</div>
+      </div>
+      <div class="form-item full" id="fi-parent">
+        <label>上级 SKU <span class="req">*</span></label>
+        <input id="inParent" list="dlParent" placeholder="如 nvidia.h200.g8.amd64" autocomplete="off" />
+        <datalist id="dlParent"></datalist>
+        <div class="hint">被组合出来的商品规格</div>
+      </div>
+      <div class="form-item full" id="fi-child">
+        <label>下级 SKU <span class="req">*</span></label>
+        <input id="inChild" list="dlChild" placeholder="如 nvidia.h200.amd64" autocomplete="off" />
+        <datalist id="dlChild"></datalist>
+        <div class="hint">被计入组合的原子规格</div>
+      </div>
+      <div class="form-item" id="fi-role">
+        <label>作用 <span class="req">*</span></label>
+        <input id="inRole" list="dlRole" placeholder="gpu" autocomplete="off" />
+        <datalist id="dlRole">
+          <option value="gpu"></option>
+          <option value="cpu"></option>
+          <option value="memory"></option>
+          <option value="disk"></option>
+          <option value="network"></option>
+          <option value="accelerator"></option>
+        </datalist>
+        <div class="hint">可选用预置项或自定义</div>
+      </div>
+      <div class="form-item" id="fi-qty">
+        <label>数量 <span class="req">*</span></label>
+        <input id="inQty" type="number" min="1" step="1" value="1" />
+        <div class="hint">正整数</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" id="btnCancelEdit">取消</button>
+      <button class="btn primary" id="btnSaveEdit">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm">
+    <div class="modal-head">
+      <div>
+        <h3 id="confirmTitle">确认删除</h3>
+        <p id="confirmSub"></p>
+      </div>
+    </div>
+    <div class="modal-body" id="confirmBody"></div>
+    <div class="modal-foot">
+      <button class="btn" id="btnCancelConfirm">取消</button>
+      <button class="btn danger" id="btnOkConfirm">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var KEY = "sku_bom_admin_v2";
+  var $ = function(s, r){ return (r || document).querySelector(s); };
+  var $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var uid = function(){ return "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); };
+  var esc = function(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  };
+
+  /* ================= 示例数据 ================= */
+  function seedData(){
+    var g = [
+      ["ascend.910b.g16.amd64", "ascend.910b.amd64", 16],
+      ["ascend.910b.g8.arm64", "ascend.910b.arm64", 8],
+      ["metax.x201.g1.amd64", "metax.x201.amd64", 1],
+      ["metax.x201.g1m96.amd64", "metax.x201.amd64", 1],
+      ["metax.x201.g2.amd64", "metax.x201.amd64", 2],
+      ["metax.x201.g4.amd64", "metax.x201.amd64", 4],
+      ["metax.x201.g8.amd64", "metax.x201.amd64", 8],
+      ["metax.x201.g8m1024.amd64", "metax.x201.amd64", 8],
+      ["mthreads.s4000.g1.amd64", "mthreads.s4000.amd64", 1],
+      ["mthreads.s5000.g1.amd64", "mthreads.s5000.amd64", 1],
+      ["mthreads.s5000.g2.amd64", "mthreads.s5000.amd64", 2],
+      ["mthreads.s5000.g4.amd64", "mthreads.s5000.amd64", 4],
+      ["mthreads.s5000.g8.amd64", "mthreads.s5000.amd64", 8],
+      ["nvidia.h200.g1.amd64", "nvidia.h200.amd64", 1],
+      ["nvidia.h200.g2.amd64", "nvidia.h200.amd64", 2],
+      ["nvidia.h200.g4.amd64", "nvidia.h200.amd64", 4],
+      ["nvidia.h200.g8.amd64", "nvidia.h200.amd64", 8],
+      ["nvidia.rtx4090.g1.amd64", "nvidia.rtx4090.amd64", 1],
+      ["nvidia.rtx4090.g2.amd64", "nvidia.rtx4090.amd64", 2],
+      ["nvidia.rtx4090.g4.amd64", "nvidia.rtx4090.amd64", 4]
+    ].map(function(a){
+      return { id: uid(), definition: "faas-instance-component", parentSku: a[0], childSku: a[1], role: "gpu", qty: a[2] };
+    });
+
+    var extra = [
+      ["faas.pod.small.amd64", "faas.vcpu.2c.amd64", "cpu", 2],
+      ["faas.pod.small.amd64", "faas.memory.8g", "memory", 8],
+      ["faas.pod.medium.amd64", "faas.vcpu.4c.amd64", "cpu", 4],
+      ["faas.pod.medium.amd64", "faas.memory.16g", "memory", 16],
+      ["faas.pod.medium.amd64", "faas.disk.ssd.100g", "disk", 1],
+      ["faas.pod.large.amd64", "faas.vcpu.8c.amd64", "cpu", 8],
+      ["faas.pod.large.amd64", "faas.memory.32g", "memory", 32],
+      ["faas.pod.large.amd64", "faas.nic.10g", "network", 1]
+    ].map(function(a){
+      return { id: uid(), definition: "faas-instance-basic", parentSku: a[0], childSku: a[1], role: a[2], qty: a[3] };
+    });
+
+    return g.concat(extra);
+  }
+
+  /* ================= 状态 ================= */
+  var state = {
+    rows: [],
+    selected: new Set(),
+    page: 1,
+    pageSize: 20,
+    view: "group",
+    sortQty: 0,
+    editingId: null
+  };
+
+  function save(){
+    try { localStorage.setItem(KEY, JSON.stringify(state.rows)); } catch(e){}
+  }
+  function load(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr)) return null;
+      return arr.filter(function(r){ return r && r.definition && r.parentSku && r.childSku; }).map(function(r){
+        return {
+          id: r.id || uid(),
+          definition: String(r.definition),
+          parentSku: String(r.parentSku),
+          childSku: String(r.childSku),
+          role: String(r.role || "gpu"),
+          qty: Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1
+        };
+      });
+    } catch(e){ return null; }
+  }
+
+  /* ================= 工具 ================= */
+  function toast(msg, kind){
+    var el = document.createElement("div");
+    el.className = "toast" + (kind ? " " + kind : "");
+    el.textContent = msg;
+    $("#toasts").appendChild(el);
+    setTimeout(function(){
+      el.style.transition = "opacity .2s";
+      el.style.opacity = "0";
+      setTimeout(function(){ el.remove(); }, 220);
+    }, 2300);
+  }
+  function roleClass(role){
+    var r = String(role || "").toLowerCase();
+    return ["gpu", "cpu", "memory", "disk", "network"].indexOf(r) >= 0 ? r : "";
+  }
+  function uniq(a){ return Array.from(new Set(a)); }
+  function cmp(a, b){ return String(a).localeCompare(String(b), "en"); }
+
+  /* ================= 筛选 ================= */
+  var filters = { name: "", sell: "", def: "", sku: "" };
+
+  function currentRows(){
+    var n = filters.name.trim().toLowerCase();
+    var s = filters.sell.trim().toLowerCase();
+    var rows = state.rows.filter(function(r){
+      if (n && !(r.parentSku.toLowerCase().indexOf(n) >= 0 || r.childSku.toLowerCase().indexOf(n) >= 0)) return false;
+      if (s && !(r.definition.toLowerCase().indexOf(s) >= 0)) return false;
+      if (filters.def && r.definition !== filters.def) return false;
+      if (filters.sku && r.parentSku !== filters.sku && r.childSku !== filters.sku) return false;
+      return true;
+    });
+    rows.sort(function(a, b){
+      var d = cmp(a.definition, b.definition);
+      if (d) return d;
+      var p = cmp(a.parentSku, b.parentSku);
+      if (p) return p;
+      if (state.sortQty){
+        var q = (a.qty - b.qty) * state.sortQty;
+        if (q) return q;
+      }
+      return cmp(a.childSku, b.childSku);
+    });
+    return rows;
+  }
+
+  function renderFilterOptions(){
+    var defs = uniq(state.rows.map(function(r){ return r.definition; })).sort(cmp);
+    var skus = uniq(state.rows.map(function(r){ return r.parentSku; }).concat(state.rows.map(function(r){ return r.childSku; }))).sort(cmp);
+
+    var fDef = $("#fDef");
+    var keepDef = filters.def;
+    fDef.innerHTML = '<option value="">全部</option>' + defs.map(function(d){
+      return '<option value="' + esc(d) + '">' + esc(d) + '</option>';
+    }).join("");
+    if (defs.indexOf(keepDef) >= 0) fDef.value = keepDef; else filters.def = "";
+
+    var fSku = $("#fSku");
+    var keepSku = filters.sku;
+    fSku.innerHTML = '<option value="">全部</option>' + skus.map(function(d){
+      return '<option value="' + esc(d) + '">' + esc(d) + '</option>';
+    }).join("");
+    if (skus.indexOf(keepSku) >= 0) fSku.value = keepSku; else filters.sku = "";
+
+    $("#dlDef").innerHTML = defs.map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
+    $("#dlParent").innerHTML = uniq(state.rows.map(function(r){ return r.parentSku; })).sort(cmp)
+      .map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
+    $("#dlChild").innerHTML = uniq(state.rows.map(function(r){ return r.childSku; })).sort(cmp)
+      .map(function(d){ return '<option value="' + esc(d) + '"></option>'; }).join("");
+  }
+
+  function renderStats(){
+    var rows = currentRows();
+    $("#sumRows").textContent = rows.length;
+    $("#sumParents").textContent = uniq(rows.map(function(r){ return r.parentSku; })).length;
+    $("#sumChildren").textContent = uniq(rows.map(function(r){ return r.childSku; })).length;
+    $("#sumRoles").textContent = uniq(rows.map(function(r){ return r.role; })).length;
+    $("#defTitle").textContent = filters.def ? ("SKU 构成明细 · " + filters.def) : "SKU 构成明细";
+  }
+
+  /* ================= 表格 ================= */
+  function findDefStart(rows, i){
+    for (var k = i - 1; k >= 0; k--) if (rows[k].definition !== rows[i].definition) return k + 1;
+    return 0;
+  }
+  function findParentStart(rows, i){
+    for (var k = i - 1; k >= 0; k--){
+      if (rows[k].definition !== rows[i].definition || rows[k].parentSku !== rows[i].parentSku) return k + 1;
+    }
+    return 0;
+  }
+
+  function renderTable(){
+    var rows = currentRows();
+    var total = rows.length;
+    var pageCount = Math.max(1, Math.ceil(total / state.pageSize));
+    if (state.page > pageCount) state.page = pageCount;
+    var start = (state.page - 1) * state.pageSize;
+    var pageRows = rows.slice(start, start + state.pageSize);
+    var tb = $("#tbody");
+
+    if (!pageRows.length){
+      tb.innerHTML = '<tr><td colspan="7"><div class="empty">' +
+        '<svg width="38" height="38" viewBox="0 0 48 48" fill="none"><rect x="8" y="12" width="32" height="26" rx="4" stroke="#ccd1dc" stroke-width="2"/><path d="M8 20h32M18 12v8M30 12v8" stroke="#ccd1dc" stroke-width="2"/></svg>' +
+        '<div class="big">没有匹配的构成关系</div>' +
+        '<div>调整筛选条件，或点右上角「新增构成」加一条</div></div></td></tr>';
+    } else {
+      var defSpan = {}, parentSpan = {};
+      pageRows.forEach(function(r, i){
+        var dStart = (i === 0) || (pageRows[i - 1].definition !== r.definition);
+        var pStart = dStart || (pageRows[i - 1].parentSku !== r.parentSku);
+        if (dStart) defSpan[r.definition + "#" + i] = 1;
+        if (pStart) parentSpan[r.definition + "||" + r.parentSku + "#" + i] = 1;
+        if (i > 0 && !dStart){
+          var ds = findDefStart(pageRows, i);
+          var dk = pageRows[ds].definition + "#" + ds;
+          defSpan[dk] = (defSpan[dk] || 1) + 1;
+        }
+        if (i > 0 && !pStart){
+          var ps = findParentStart(pageRows, i);
+          var pk = pageRows[ps].definition + "||" + pageRows[ps].parentSku + "#" + ps;
+          parentSpan[pk] = (parentSpan[pk] || 1) + 1;
+        }
+      });
+
+      var html = "";
+      pageRows.forEach(function(r, i){
+        var dStart = (i === 0) || (pageRows[i - 1].definition !== r.definition);
+        var pStart = dStart || (pageRows[i - 1].parentSku !== r.parentSku);
+        var sel = state.selected.has(r.id);
+        html += '<tr class="' + (sel ? "sel" : "") + (dStart ? " group-start" : "") + '" data-id="' + r.id + '">';
+        html += '<td><input type="checkbox" class="checkbox row-check" data-id="' + r.id + '"' + (sel ? " checked" : "") + '></td>';
+        if (dStart){
+          var span = defSpan[r.definition + "#" + i] || 1;
+          html += '<td class="def-cell" rowspan="' + span + '">' +
+            '<div class="def-name">' + esc(r.definition) + '</div>' +
+            '<div class="def-count">' + span + ' 条构成</div></td>';
+        }
+        if (pStart){
+          var key = r.definition + "||" + r.parentSku;
+          var pspan = parentSpan[key + "#" + i] || 1;
+          html += '<td class="parent-cell" rowspan="' + pspan + '">' +
+            '<span class="sku-link" data-sku="' + esc(r.parentSku) + '">' + esc(r.parentSku) + '</span>' +
+            (pspan > 1 ? '<div class="sub-count">' + pspan + ' 个下级</div>' : "") + '</td>';
+        }
+        html += '<td><span class="sku-plain">' + esc(r.childSku) + '</span></td>';
+        html += '<td><span class="role ' + roleClass(r.role) + '">' + esc(r.role) + '</span></td>';
+        html += '<td><span class="qty">' + r.qty + '<em>件</em></span></td>';
+        html += '<td><div class="ops">' +
+          '<button class="op-link" data-act="edit" data-id="' + r.id + '">编辑</button>' +
+          '<button class="op-link del" data-act="del" data-id="' + r.id + '">删除</button>' +
+          '</div></td>';
+        html += '</tr>';
+      });
+      tb.innerHTML = html;
+    }
+
+    var pageIds = pageRows.map(function(r){ return r.id; });
+    var allChecked = pageIds.length > 0 && pageIds.every(function(id){ return state.selected.has(id); });
+    var someChecked = pageIds.some(function(id){ return state.selected.has(id); });
+    var ca = $("#checkAll");
+    ca.checked = allChecked;
+    ca.indeterminate = !allChecked && someChecked;
+
+    renderPager(total, pageCount);
+    renderSelBar();
+  }
+
+  function renderPager(total, pageCount){
+    var p = state.page;
+    var parts = ['<button data-page="prev"' + (p <= 1 ? " disabled" : "") + '>&lsaquo;</button>'];
+    var pages = [];
+    if (pageCount <= 7){
+      for (var i = 1; i <= pageCount; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      var s = Math.max(2, p - 1), e = Math.min(pageCount - 1, p + 1);
+      if (s > 2) pages.push("...");
+      for (var j = s; j <= e; j++) pages.push(j);
+      if (e < pageCount - 1) pages.push("...");
+      pages.push(pageCount);
+    }
+    pages.forEach(function(pg){
+      if (pg === "...") parts.push('<button disabled style="border:0;background:transparent">&hellip;</button>');
+      else parts.push('<button class="' + (pg === p ? "on" : "") + '" data-page="' + pg + '">' + pg + '</button>');
+    });
+    parts.push('<button data-page="next"' + (p >= pageCount ? " disabled" : "") + '>&rsaquo;</button>');
+    parts.push('<span class="total">共 ' + total + ' 条</span>');
+    $("#pager").innerHTML = parts.join("");
+  }
+
+  function renderSelBar(){
+    var n = state.selected.size;
+    $("#selbar").classList.toggle("show", n > 0);
+    $("#selCount").textContent = "已选 " + n + " 项";
+  }
+
+  /* ================= 树形 ================= */
+  function renderTree(){
+    var rows = currentRows();
+    var box = $("#treeView");
+    if (!rows.length){
+      box.innerHTML = '<div class="empty"><div class="big">没有匹配的构成关系</div><div>调整筛选条件试试</div></div>';
+      return;
+    }
+    var byDef = new Map();
+    rows.forEach(function(r){
+      if (!byDef.has(r.definition)) byDef.set(r.definition, new Map());
+      var pm = byDef.get(r.definition);
+      if (!pm.has(r.parentSku)) pm.set(r.parentSku, []);
+      pm.get(r.parentSku).push(r);
+    });
+
+    var html = '<div class="tree">';
+    Array.from(byDef.keys()).sort(cmp).forEach(function(def){
+      var pm = byDef.get(def);
+      var totalCnt = Array.from(pm.values()).reduce(function(a, b){ return a + b.length; }, 0);
+      html += '<div class="tree-def"><span class="def-name">' + esc(def) + '</span>' +
+        '<span class="mini-badge">' + pm.size + ' 个上级 / ' + totalCnt + ' 条构成</span></div>';
+      Array.from(pm.keys()).sort(cmp).forEach(function(parent){
+        var kids = pm.get(parent);
+        html += '<div class="tree-parent"><span class="brace">&#9500;&#9472;</span>' +
+          '<span class="sku-link" data-sku="' + esc(parent) + '">' + esc(parent) + '</span>' +
+          '<span class="mini-badge">' + kids.length + ' 个下级</span></div>';
+        html += '<div class="tree-children">';
+        kids.slice().sort(function(a, b){ return cmp(a.childSku, b.childSku); }).forEach(function(k){
+          html += '<div class="tree-child"><span class="brace">&#9492;&#9472;</span>' +
+            '<span class="sku-plain">' + esc(k.childSku) + '</span>' +
+            '<span class="tree-meta">' +
+              '<span class="role ' + roleClass(k.role) + '">' + esc(k.role) + '</span>' +
+              '<span class="qty">&times;' + k.qty + '</span>' +
+              '<button class="op-link" data-act="edit" data-id="' + k.id + '">编辑</button>' +
+              '<button class="op-link del" data-act="del" data-id="' + k.id + '">删除</button>' +
+            '</span></div>';
+        });
+        html += '</div>';
+      });
+    });
+    html += '</div>';
+    box.innerHTML = html;
+  }
+
+  function render(){
+    renderFilterOptions();
+    renderStats();
+    renderTable();
+    renderTree();
+    $("#tableView").style.display = state.view === "group" ? "" : "none";
+    $("#treeView").style.display = state.view === "tree" ? "" : "none";
+  }
+
+  /* ================= 弹窗 ================= */
+  function clearFormErrors(){
+    ["fi-def", "fi-parent", "fi-child", "fi-role", "fi-qty"].forEach(function(id){
+      $("#" + id).classList.remove("error");
+    });
+    var h = $("#hintDef");
+    h.textContent = "构成定义分组名，同一定义下共享一套构成规则";
+    h.style.color = "";
+  }
+  function setErr(id, hintId, msg){
+    $("#" + id).classList.add("error");
+    if (hintId){
+      var h = $("#" + hintId);
+      h.textContent = msg;
+      h.style.color = "#f53f3f";
+    }
+  }
+
+  function openEdit(id){
+    state.editingId = id || null;
+    clearFormErrors();
+    if (id){
+      var r = state.rows.filter(function(x){ return x.id === id; })[0];
+      if (!r) return;
+      $("#editTitle").textContent = "编辑 SKU 构成";
+      $("#inDef").value = r.definition;
+      $("#inParent").value = r.parentSku;
+      $("#inChild").value = r.childSku;
+      $("#inRole").value = r.role;
+      $("#inQty").value = r.qty;
+    } else {
+      $("#editTitle").textContent = "新增 SKU 构成";
+      $("#inDef").value = filters.def || "";
+      $("#inParent").value = "";
+      $("#inChild").value = "";
+      $("#inRole").value = "gpu";
+      $("#inQty").value = 1;
+    }
+    $("#editOverlay").classList.add("show");
+    setTimeout(function(){ $("#inDef").focus(); }, 40);
+  }
+  function closeEdit(){
+    $("#editOverlay").classList.remove("show");
+    state.editingId = null;
+  }
+
+  function saveEdit(){
+    clearFormErrors();
+    var def = $("#inDef").value.trim();
+    var parent = $("#inParent").value.trim();
+    var child = $("#inChild").value.trim();
+    var role = $("#inRole").value.trim();
+    var qtyRaw = $("#inQty").value;
+    var qty = Number(qtyRaw);
+    var bad = false;
+
+    if (!def){ setErr("fi-def", "hintDef", "请填写 SKU Definition"); bad = true; }
+    if (!parent){ setErr("fi-parent", null, ""); bad = true; }
+    if (!child){ setErr("fi-child", null, ""); bad = true; }
+    if (!role){ setErr("fi-role", null, ""); bad = true; }
+    if (!qtyRaw || !isFinite(qty) || qty <= 0 || Math.floor(qty) !== qty){ setErr("fi-qty", null, ""); bad = true; }
+    if (bad){ toast("还有必填项没填对", "err"); return; }
+
+    if (parent === child){
+      $("#fi-child").classList.add("error");
+      toast("上级和下级不能是同一个 SKU", "err");
+      return;
+    }
+
+    var dup = state.rows.filter(function(r){
+      return r.definition === def && r.parentSku === parent && r.childSku === child && r.role === role && r.id !== state.editingId;
+    })[0];
+    if (dup){
+      $("#fi-child").classList.add("error");
+      toast("该构成关系已存在（同定义 / 同上级 / 同下级 / 同作用）", "err");
+      return;
+    }
+
+    if (state.editingId){
+      var t = state.rows.filter(function(x){ return x.id === state.editingId; })[0];
+      if (t){ t.definition = def; t.parentSku = parent; t.childSku = child; t.role = role; t.qty = qty; }
+      toast("已更新", "ok");
+    } else {
+      state.rows.push({ id: uid(), definition: def, parentSku: parent, childSku: child, role: role, qty: qty });
+      toast("已新增 1 条构成", "ok");
+    }
+    save();
+    closeEdit();
+    render();
+  }
+
+  /* ================= 确认框 ================= */
+  var confirmCb = null;
+  function askConfirm(title, sub, body, cb, okText){
+    $("#confirmTitle").textContent = title;
+    $("#confirmSub").textContent = sub || "";
+    $("#confirmBody").innerHTML = body || "";
+    $("#btnOkConfirm").textContent = okText || "确认删除";
+    confirmCb = cb;
+    $("#confirmOverlay").classList.add("show");
+  }
+  function closeConfirm(){
+    $("#confirmOverlay").classList.remove("show");
+    confirmCb = null;
+  }
+
+  function doDelete(ids){
+    var set = new Set(ids);
+    state.rows = state.rows.filter(function(r){ return !set.has(r.id); });
+    ids.forEach(function(id){ state.selected.delete(id); });
+    save();
+    render();
+    toast("已删除 " + ids.length + " 条构成", "ok");
+  }
+
+  /* ================= 导入导出 ================= */
+  function exportCsv(){
+    var rows = currentRows();
+    if (!rows.length){ toast("没有数据可导出", "err"); return; }
+    var head = ["SKU Definition", "SKU", "下级SKU", "作用", "数量"];
+    var lines = [head.join(",")];
+    rows.forEach(function(r){
+      lines.push([r.definition, r.parentSku, r.childSku, r.role, r.qty].map(function(v){
+        var s = String(v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(","));
+    });
+    var blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "sku-composition-" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    toast("已导出 " + rows.length + " 条", "ok");
+  }
+
+  function parseCsv(text){
+    var lines = text.replace(/\r\n?/g, "\n").split("\n").filter(function(l){ return l.trim() !== ""; });
+    if (!lines.length) return [];
+    var split = function(line){
+      var out = [], cur = "", q = false;
+      for (var i = 0; i < line.length; i++){
+        var ch = line.charAt(i);
+        if (q){
+          if (ch === '"' && line.charAt(i + 1) === '"'){ cur += '"'; i++; }
+          else if (ch === '"'){ q = false; }
+          else cur += ch;
+        } else {
+          if (ch === '"') q = true;
+          else if (ch === "," || ch === "\t"){ out.push(cur); cur = ""; }
+          else cur += ch;
+        }
+      }
+      out.push(cur);
+      return out.map(function(s){ return s.trim(); });
+    };
+    var first = split(lines[0]).join("|").toLowerCase();
+    var hasHead = /definition|sku|作用|数量/.test(first);
+    return lines.slice(hasHead ? 1 : 0).map(split).map(function(cols){
+      return {
+        definition: cols[0] || "",
+        parentSku: cols[1] || "",
+        childSku: cols[2] || "",
+        role: cols[3] || "gpu",
+        qty: Number(cols[4] || 1)
+      };
+    });
+  }
+
+  function handleImport(file){
+    var reader = new FileReader();
+    reader.onload = function(){
+      var text = String(reader.result || "");
+      var incoming = [];
+      try {
+        if (/\.json$/i.test(file.name)){
+          var parsed = JSON.parse(text);
+          var arr = Array.isArray(parsed) ? parsed : (parsed.rows || parsed.data || []);
+          incoming = arr.map(function(r){
+            return {
+              definition: r.definition || r["SKU Definition"] || r.def || "",
+              parentSku: r.parentSku || r.sku || r["SKU"] || r.parent || "",
+              childSku: r.childSku || r.child || r["下级SKU"] || "",
+              role: r.role || r["作用"] || "gpu",
+              qty: Number(r.qty != null ? r.qty : (r["数量"] != null ? r["数量"] : 1))
+            };
+          });
+        } else {
+          incoming = parseCsv(text);
+        }
+      } catch(e){ toast("文件解析失败：" + e.message, "err"); return; }
+
+      incoming = incoming.filter(function(r){ return r.definition && r.parentSku && r.childSku; });
+      if (!incoming.length){ toast("没解析出有效行，检查一下表头顺序", "err"); return; }
+
+      askConfirm("导入数据", "共解析出 " + incoming.length + " 行有效构成，将合并到现有数据（重复项自动跳过）。", "", function(){
+        var added = 0, skipped = 0;
+        incoming.forEach(function(r){
+          var qty = Number(r.qty) > 0 ? Math.floor(Number(r.qty)) : 1;
+          var role = String(r.role || "gpu").trim() || "gpu";
+          var dup = state.rows.filter(function(x){
+            return x.definition === r.definition && x.parentSku === r.parentSku && x.childSku === r.childSku && x.role === role;
+          })[0];
+          if (dup){ skipped++; return; }
+          state.rows.push({ id: uid(), definition: r.definition, parentSku: r.parentSku, childSku: r.childSku, role: role, qty: qty });
+          added++;
+        });
+        save(); render();
+        toast("导入完成：新增 " + added + " 条，跳过重复 " + skipped + " 条", "ok");
+      }, "确认导入");
+    };
+    reader.readAsText(file, "utf-8");
+  }
+
+  /* ================= 侧边栏 ================= */
+  function bindNav(){
+    $("#brandToggle").addEventListener("click", function(){ $("#app").classList.toggle("collapsed"); });
+    $("#hamburger").addEventListener("click", function(){ $("#app").classList.toggle("collapsed"); });
+
+    $$("[data-group]").forEach(function(item){
+      item.addEventListener("click", function(e){
+        var key = item.getAttribute("data-group");
+        var sub = $('[data-sub="' + key + '"]');
+        if (!sub) return;
+        item.classList.toggle("open");
+        sub.hidden = !item.classList.contains("open");
+      });
+    });
+
+    $$("[data-nav]").forEach(function(item){
+      item.addEventListener("click", function(){
+        if (item.getAttribute("data-nav") === "SKU 构成") return;
+        toast("「" + item.getAttribute("data-nav") + "」页面不在本次交付范围内", "err");
+      });
+    });
+
+    $("#themeSwitch").addEventListener("click", function(){ this.classList.toggle("on"); });
+
+    $$(".tabs .tab").forEach(function(t){
+      t.addEventListener("click", function(){
+        if (t.classList.contains("active")) return;
+        $$(".tabs .tab").forEach(function(x){ x.classList.remove("active"); });
+        t.classList.add("active");
+        toast("「" + t.textContent.trim() + "」为占位页签，本次只交付「构成关系」", "err");
+      });
+    });
+  }
+
+  /* ================= 事件 ================= */
+  function bind(){
+    var t1;
+    $("#fName").addEventListener("input", function(e){
+      clearTimeout(t1);
+      var v = e.target.value;
+      t1 = setTimeout(function(){ filters.name = v; state.page = 1; state.selected.clear(); render(); }, 160);
+    });
+    var t2;
+    $("#fSell").addEventListener("input", function(e){
+      clearTimeout(t2);
+      var v = e.target.value;
+      t2 = setTimeout(function(){ filters.sell = v; state.page = 1; state.selected.clear(); render(); }, 160);
+    });
+    $("#fDef").addEventListener("change", function(e){
+      filters.def = e.target.value; state.page = 1; state.selected.clear(); render();
+    });
+    $("#fSku").addEventListener("change", function(e){
+      filters.sku = e.target.value; state.page = 1; state.selected.clear(); render();
+    });
+    $("#resetFilters").addEventListener("click", function(){
+      filters.name = filters.sell = filters.def = filters.sku = "";
+      $("#fName").value = ""; $("#fSell").value = ""; $("#fDef").value = ""; $("#fSku").value = "";
+      state.page = 1; state.selected.clear(); render();
+      toast("筛选已重置", "ok");
+    });
+
+    $$("#viewSeg button").forEach(function(b){
+      b.addEventListener("click", function(){
+        $$("#viewSeg button").forEach(function(x){ x.classList.remove("on"); });
+        b.classList.add("on");
+        state.view = b.getAttribute("data-view");
+        render();
+      });
+    });
+
+    $("#thQty").addEventListener("click", function(){
+      state.sortQty = state.sortQty === 0 ? 1 : (state.sortQty === 1 ? -1 : 0);
+      this.classList.toggle("sorted", state.sortQty !== 0);
+      this.querySelector(".caret").textContent = state.sortQty === 0 ? "↕" : (state.sortQty === 1 ? "↑" : "↓");
+      render();
+    });
+
+    $("#checkAll").addEventListener("change", function(e){
+      var rows = currentRows().slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
+      rows.forEach(function(r){
+        if (e.target.checked) state.selected.add(r.id); else state.selected.delete(r.id);
+      });
+      render();
+    });
+
+    document.addEventListener("click", function(e){
+      var actBtn = e.target.closest("[data-act]");
+      if (actBtn){
+        var id = actBtn.getAttribute("data-id");
+        var act = actBtn.getAttribute("data-act");
+        if (act === "edit") openEdit(id);
+        if (act === "del"){
+          var r = state.rows.filter(function(x){ return x.id === id; })[0];
+          if (!r) return;
+          askConfirm("确认删除这条构成", "",
+            '<div style="background:#fafbfc;border:1px solid #eceef4;border-radius:6px;padding:10px 12px;line-height:1.9">' +
+              '<div><span style="color:#8a90a0">定义：</span>' + esc(r.definition) + '</div>' +
+              '<div><span style="color:#8a90a0">上级：</span><span class="mono">' + esc(r.parentSku) + '</span></div>' +
+              '<div><span style="color:#8a90a0">下级：</span><span class="mono">' + esc(r.childSku) + '</span> <span style="color:#8a90a0">×</span> ' + r.qty + '</div>' +
+            '</div>',
+            function(){ doDelete([id]); });
+        }
+        return;
+      }
+
+      var skuEl = e.target.closest("[data-sku]");
+      if (skuEl){
+        var v = skuEl.getAttribute("data-sku");
+        filters.sku = v;
+        $("#fSku").value = v;
+        filters.name = "";
+        $("#fName").value = "";
+        state.page = 1;
+        state.selected.clear();
+        render();
+        toast("已按 SKU 筛选：" + v, "ok");
+        return;
+      }
+
+      var cb = e.target.closest(".row-check");
+      if (cb){
+        if (cb.checked) state.selected.add(cb.getAttribute("data-id"));
+        else state.selected.delete(cb.getAttribute("data-id"));
+        renderSelBar();
+        var tr = cb.closest("tr");
+        if (tr) tr.classList.toggle("sel", cb.checked);
+        var pageIds = currentRows().slice((state.page - 1) * state.pageSize, state.page * state.pageSize).map(function(r){ return r.id; });
+        var all = pageIds.every(function(id){ return state.selected.has(id); });
+        var some = pageIds.some(function(id){ return state.selected.has(id); });
+        var ca = $("#checkAll");
+        ca.checked = all;
+        ca.indeterminate = !all && some;
+      }
+    });
+
+    $("#pager").addEventListener("click", function(e){
+      var b = e.target.closest("button[data-page]");
+      if (!b || b.disabled) return;
+      var v = b.getAttribute("data-page");
+      var pageCount = Math.max(1, Math.ceil(currentRows().length / state.pageSize));
+      if (v === "prev") state.page = Math.max(1, state.page - 1);
+      else if (v === "next") state.page = Math.min(pageCount, state.page + 1);
+      else state.page = Number(v);
+      renderTable();
+    });
+
+    $("#pageSizeSel").addEventListener("change", function(e){
+      state.pageSize = Number(e.target.value);
+      state.page = 1;
+      render();
+    });
+
+    $("#btnBatchDel").addEventListener("click", function(){
+      var ids = Array.from(state.selected);
+      if (!ids.length) return;
+      askConfirm("批量删除 " + ids.length + " 条构成", "删除后不可撤销（本地演示数据）。", "",
+        function(){ doDelete(ids); }, "删除 " + ids.length + " 条");
+    });
+    $("#btnClearSel").addEventListener("click", function(){ state.selected.clear(); render(); });
+
+    $("#btnAdd").addEventListener("click", function(){ openEdit(null); });
+    $("#btnCancelEdit").addEventListener("click", closeEdit);
+    $("#btnSaveEdit").addEventListener("click", saveEdit);
+    $("#editOverlay").addEventListener("click", function(e){
+      if (e.target === $("#editOverlay")) closeEdit();
+    });
+    ["inDef", "inParent", "inChild", "inRole", "inQty"].forEach(function(id){
+      $("#" + id).addEventListener("keydown", function(e){
+        if (e.key === "Enter") saveEdit();
+      });
+    });
+
+    $("#btnCancelConfirm").addEventListener("click", closeConfirm);
+    $("#confirmOverlay").addEventListener("click", function(e){
+      if (e.target === $("#confirmOverlay")) closeConfirm();
+    });
+    $("#btnOkConfirm").addEventListener("click", function(){
+      var cb = confirmCb;
+      closeConfirm();
+      if (cb) cb();
+    });
+
+    $("#btnExport").addEventListener("click", exportCsv);
+    $("#btnImport").addEventListener("click", function(){ $("#fileInput").click(); });
+    $("#fileInput").addEventListener("change", function(e){
+      var f = e.target.files && e.target.files[0];
+      if (f) handleImport(f);
+      e.target.value = "";
+    });
+
+    $("#btnSeed").addEventListener("click", function(){
+      askConfirm("恢复示例数据", "当前所有构成关系会被替换为初始示例数据。", "", function(){
+        state.rows = seedData();
+        state.selected.clear();
+        state.page = 1;
+        save();
+        render();
+        toast("已恢复示例数据", "ok");
+      }, "覆盖并恢复");
+    });
+
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape"){
+        if ($("#confirmOverlay").classList.contains("show")) closeConfirm();
+        else if ($("#editOverlay").classList.contains("show")) closeEdit();
+      }
+    });
+
+    bindNav();
+  }
+
+  /* ================= 启动 ================= */
+  var saved = load();
+  state.rows = (saved && saved.length) ? saved : seedData();
+  bind();
+  render();
+  if (!saved) save();
+})();
+</script>
+</body>
+</html>
