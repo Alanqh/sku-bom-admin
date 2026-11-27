@@ -7,13 +7,13 @@
 自上而下四段：
 
 1. **标题行** —— 只有页面标题
-2. **操作与筛选行** —— 左侧「新增构成」按钮，中间筛选器（上级 SKU / 下级 SKU / 作用），右端「明细 / 树形」视图切换
+2. **操作与筛选行** —— 左侧「新增构成」按钮，右侧筛选器（sku-definition / 上级 SKU / 下级 SKU / 作用 + 重置）
 3. **列名行** —— 表格表头
-4. **数据行** —— 构成关系明细，每行一条
+4. **数据行** —— 构成关系明细，每行一条（仅列表视图，无树形结构）
 
 ## 列顺序
 
-`上级 SKU ID` → `上级 SKU Code` → `下级 SKU ID` → `下级 SKU Code` → `作用` → `数量` → `创建时间` → `更新时间` → `操作`
+`上级 sku-definition` → `上级 SKU ID` → `上级 SKU Code` → `下级 SKU ID` → `下级 SKU Code` → `作用` → `数量` → `创建时间` → `更新时间` → `操作`
 
 ## 数据模型
 
@@ -23,6 +23,7 @@ SKU **ID 与 Code 是同一个对象的两种属性**，不可分开编辑：选
 | --- | --- |
 | `parentSkuId` / `parentSkuName` | 上级 SKU 的 ID 与 Code，始终成对 |
 | `childSkuId` / `childSkuName` | 下级 SKU 的 ID 与 Code，始终成对 |
+| `sku-definition` | 上级 SKU 的类型定义，由上级 SKU ID 稳定派生，只读 |
 | `role` | 该下级在此组合中承担的作用 |
 | `qty` | 该下级在上级中的个数 |
 | `createdAt` / `updatedAt` | 该条构成关系的创建 / 最近编辑时间 |
@@ -34,6 +35,24 @@ SKU **ID 与 Code 是同一个对象的两种属性**，不可分开编辑：选
 - 同一 SKU 的 ID 与 Code 在全表一一对应：同一个 Code 永远对应同一个 ID。
 
 > 注：界面术语为 **Code**，但内部数据字段仍沿用 `parentSkuName` / `childSkuName` 命名，以兼容浏览器中已存在的 `localStorage` 数据，避免升级时丢失历史记录。
+
+### sku-definition
+
+上级 SKU 的**类型定义**，是 SKU 自身的属性（不随构成关系变化），页面上只读展示，值由上级 SKU ID 稳定派生（同一 SKU ID 永远得到同一个值）。枚举值：
+
+| 枚举值 | 说明 |
+| --- | --- |
+| `faas-instance-component` | FaaS 实例组件 |
+| `faas-instance-type` | FaaS 实例规格 |
+| `maas-batch-chat` | MaaS 批量对话 |
+| `maas-fine-tune-chat` | MaaS 微调对话 |
+| `maas-online-image` | MaaS 在线图像 |
+| `maas-online-speech` | MaaS 在线语音 |
+| `maas-online-text` | MaaS 在线文本 |
+| `maas-online-video` | MaaS 在线视频 |
+| `siliconflow.boost` | 加速套餐 |
+
+标签按家族着色：`faas-*` 青色、`maas-*` 橙色、`siliconflow.*` 紫色。
 
 ## 功能
 
@@ -52,10 +71,12 @@ SKU **ID 与 Code 是同一个对象的两种属性**，不可分开编辑：选
 
 ### 其他
 
-- **筛选**：上级 SKU 与下级 SKU 各有一个独立搜索框，各自只匹配本侧 SKU 的 ID 与 Code，两条件为 AND 关系；另有作用下拉。「重置」一次清空三项
+- **筛选**：`sku-definition` 下拉为第一项（全部 + 9 个枚举值）；上级 SKU 与下级 SKU 各有一个独立搜索框，各自只匹配本侧 SKU 的 ID 与 Code；另有作用下拉。四条件为 AND 关系，「重置」一次清空
 - **SKU Code**：上下级 Code 均以蓝色链接样式显示，悬停提示「点击查看 SKU 详情」，点击弹出跳转提示（原型不实际跳转）
-- **视图**：明细表格（逐行展示，无合并单元格）与树形视图切换
-- **排序分页**：数量 / 创建时间 / 更新时间三列互斥排序（升序 → 降序 → 取消），每页 10 / 20 / 50 / 200 条
+- **视图**：仅列表视图，逐行展示，无合并单元格、无树形结构
+- **排序**：**默认按更新时间逆序**。`上级 SKU ID` / `下级 SKU ID` / `创建时间` / `更新时间` 四列表头可点击排序，循环为 升序 ↑ → 降序 ↓ → 取消（回默认更新时间逆序）。同值时以上级 ID、下级 ID 升序作为稳定次序
+- **分页**：每页 10 / 20 / 50 / 200 条
+- **数量**：纯数字展示，不带单位
 - **持久化**：数据存于浏览器 `localStorage`（key `sku_bom_admin_v3`），刷新不丢
 
 ## 说明
